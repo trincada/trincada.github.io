@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#0A8878" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0C131A" media="(prefers-color-scheme: dark)"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/favicon.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Diário Fit">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="TRINCADA">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="firebase-config.js"></script>
-<title>Diário Fit</title>
+<title>TRINCADA</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -759,7 +759,7 @@ A.addprofok=()=>{
 /* onboarding */
 function onboarding(){
   const ps=Object.values(S.profiles);
-  openModal(`<h3>Bem-vindo ao Diário Fit</h3>
+  openModal(`<h3>Bem-vindo ao TRINCADA</h3>
   <p class="muted">O plano de 01/11 a 20/12 já está carregado a partir dos seus PDFs e da planilha: dieta com carbo alto e baixo, treinos A–E, creatina e pesagens de domingo. Quem vai usar este aparelho?</p>
   <div class="stack" style="gap:8px">${ps.map(p=>`<label class="row" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer"><input type="radio" name="ob" value="${p.id}" ${p.id===S.active?'checked':''} style="width:auto;min-height:0"><b>${esc(p.name)}</b><span class="muted small">${p.age} anos · ${f1(p.startWeight)} kg · ${String(p.height).replace('.',',')} m${p.id==='p1'?' · tornozelo esquerdo':''}</span></label>`).join('')}</div>
   <label class="f">Seu nome (opcional)<input type="text" id="ob_name" placeholder="Como quer ser chamado"></label>
@@ -1311,7 +1311,7 @@ function partnerCard(){
   if(!FB.ready)body=`<p class="small muted">Conectando ao Firebase…</p>`;
   else if(!u)body=`<p class="small muted" style="margin-bottom:10px">Para conectar com seu amigo, primeiro entre na sua conta (ou crie uma).</p><button class="btn pri" data-a="pgoset">Entrar na conta</button>`;
   else{
-    const code=u.uid,msg=encodeURIComponent('Esse é o meu código do Diário Fit: '+code);
+    const code=u.uid,msg=encodeURIComponent('Esse é o meu código do TRINCADA: '+code);
     let st;
     if(S.partner){
       const nm=esc((PT.p&&PT.p.name)||S.partner.name||'seu amigo');
