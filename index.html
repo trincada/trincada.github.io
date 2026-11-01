@@ -52,9 +52,11 @@ p{margin:0}
 .app{display:block;min-height:100vh}
 .main{min-width:0;padding-block:12px calc(92px + env(safe-area-inset-bottom,0px));padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));max-width:560px;width:100%;margin:0 auto}
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:4px max(6px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(6px,env(safe-area-inset-left,0px))}
-.tabbar .tbi{display:grid;grid-template-columns:repeat(6,1fr);max-width:560px;margin:0 auto}
+.tabbar .tbi{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);max-width:560px;margin:0 auto}
 .tabbar button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 6px;color:var(--ink3);font-size:11px;font-weight:600;border-radius:10px;min-width:0;min-height:52px}
 .tabbar button svg{width:23px;height:23px}
+.tbi.t7 button{font-size:10px;letter-spacing:-.1px}.tbi.t7 button svg{width:21px;height:21px}
+.tabbar button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tabbar button[aria-current="page"]{color:var(--brand)}
 .tabbar button[aria-current="page"] svg{stroke-width:2.3}
 
@@ -229,6 +231,21 @@ details.acc .accb{padding:0 14px 14px;display:flex;flex-direction:column;gap:10p
 .edrow input{padding:7px 8px;min-height:42px}
 #rest[hidden],.tip[hidden],.ov[hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* tela do amigo: somente leitura (só navegação fica ativa) */
+.rocontent [data-a]{pointer-events:none}
+.rocontent [data-a="sub"],.rocontent [data-a="goday"],.rocontent [data-a="godieta"],.rocontent [data-a="gotreino"],.rocontent [data-a="tab"],.rocontent [data-a="histf"]{pointer-events:auto}
+.rocontent input,.rocontent select,.rocontent textarea{pointer-events:none}
+.rocontent select[data-c="exsel"],.rocontent select[data-c="msel"]{pointer-events:auto}
+.rocontent .chk,.rocontent .seg button[data-a],.rocontent .iconbtn{opacity:.55}
+.pbar{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px}
+.pbar .av{width:38px;height:38px;border-radius:50%;background:var(--lo);color:#fff;display:grid;place-items:center;font-family:var(--f-display);font-size:20px;font-weight:700;flex:none}
+.codebox{font-family:ui-monospace,Consolas,monospace;font-size:13px;word-break:break-all;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;user-select:all}
+.cmpg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13.5px;font-variant-numeric:tabular-nums}
+.cmpg>div{padding:9px 10px;border-top:1px solid var(--line);min-width:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:4px;row-gap:3px}
+.cmpg>div:nth-child(3n+1){justify-content:flex-start}
+.cmpg>div .tiny{flex-basis:100%;text-align:center}
+.cmpg>div.h{background:var(--surface2);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:700;border-top:0}
+
 </style>
 <div class="app" id="app"></div>
 <script>'use strict';
@@ -254,6 +271,7 @@ const sgn=(n,d=1)=>n==null?'—':(n>0?'+':n<0?'−':'')+f1(Math.abs(n),d);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const clone=o=>JSON.parse(JSON.stringify(o));
 const ICO={
+ users:'<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c.4-3.3 3-5.2 6-5.2s5.6 1.9 6 5.2M16 5.6a3 3 0 0 1 0 5.8M18 14.6c1.8.6 3 2.2 3.2 4.4"/>',
  today:'<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/>',
  food:'<path d="M7 3v7a2 2 0 0 0 4 0V3M9 3v18M17 21V3c-2.4 1.6-3.6 4.4-3.6 8H17"/>',
  dumb:'<path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/>',
@@ -396,14 +414,14 @@ const FOODS=[
 /* ========== estado e persistência ========== */
 const KEY='diariofit.v1', PKEY='diariofit.photos.v1';
 let S=null, memOnly=false, photos={};
-function freshState(){return {v:1,updatedAt:0,active:'p1',onboarded:false,foods:[],ui:{tab:'hoje',sub:{},date:null},profiles:{p1:seedProfile('p1'),p2:seedProfile('p2')}}}
+function freshState(){return {v:1,updatedAt:0,active:'p1',onboarded:false,partner:null,foods:[],ui:{tab:'hoje',sub:{},date:null},profiles:{p1:seedProfile('p1'),p2:seedProfile('p2')}}}
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){memOnly=true;return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){memOnly=true;return false}}
 function loadState(){
   const raw=lsGet(KEY);
   if(raw){try{const o=JSON.parse(raw);if(o&&o.profiles&&Object.keys(o.profiles).length)S=o}catch(e){}}
   if(!S)S=freshState();
-  S.ui=S.ui||{tab:'hoje',sub:{}};S.ui.sub=S.ui.sub||{};S.foods=S.foods||[];
+  S.ui=S.ui||{tab:'hoje',sub:{}};S.ui.sub=S.ui.sub||{};S.foods=S.foods||[];if(S.partner===undefined)S.partner=null;
   if(!S.profiles[S.active])S.active=Object.keys(S.profiles)[0];
   if(migrate(S))flush();
   try{photos=JSON.parse(lsGet(PKEY)||'{}')||{}}catch(e){photos={}}
@@ -429,14 +447,15 @@ function save(){S.updatedAt=Date.now();clearTimeout(saveT);saveT=setTimeout(flus
 function flush(){clearTimeout(saveT);lsSet(KEY,JSON.stringify(S))}
 addEventListener('pagehide',()=>flush());document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
 function savePhotos(){if(!lsSet(PKEY,JSON.stringify(photos)))toast('Sem espaço para guardar mais fotos neste navegador.')}
-const P=()=>S.profiles[S.active];
+let RO=null; /* perfil do amigo, só durante a montagem da tela dele (somente leitura) */
+const P=()=>RO||S.profiles[S.active];
 
 /* ----- espelho na nuvem (capability db), opcional ----- */
 const SYNC={state:'local',msg:'Salvo só neste navegador',ref:null,last:{},timer:null,busy:false};
 function monthOf(d){return d.slice(0,7)}
 function toParts(st){
   const out={};
-  const meta={v:st.v,mig:st.mig,updatedAt:st.updatedAt,active:st.active,onboarded:st.onboarded,foods:st.foods,profiles:{}};
+  const meta={v:st.v,mig:st.mig,updatedAt:st.updatedAt,active:st.active,onboarded:st.onboarded,partner:st.partner||null,foods:st.foods,profiles:{}};
   for(const [id,p] of Object.entries(st.profiles)){
     const {days,sessions,body,...rest}=p;meta.profiles[id]=rest;
     const dm={},sm={};
@@ -451,7 +470,7 @@ function toParts(st){
 }
 function fromParts(parts){
   if(!parts.meta)return null;
-  const meta=JSON.parse(parts.meta);const st={v:meta.v,mig:meta.mig,updatedAt:meta.updatedAt,active:meta.active,onboarded:meta.onboarded,foods:meta.foods||[],ui:S.ui,profiles:{}};
+  const meta=JSON.parse(parts.meta);const st={v:meta.v,mig:meta.mig,updatedAt:meta.updatedAt,active:meta.active,onboarded:meta.onboarded,partner:meta.partner||null,foods:meta.foods||[],ui:S.ui,profiles:{}};
   for(const [id,p] of Object.entries(meta.profiles)){st.profiles[id]=Object.assign({},p,{days:{},sessions:[],body:[]})}
   for(const [k,j] of Object.entries(parts)){
     if(k==='meta')continue;const m=k.match(/^([dsb])_(p[^_]*|[^_]+)(?:_(\d{4}-\d{2}))?$/);if(!m)continue;
@@ -476,6 +495,7 @@ async function syncPull(){
   }else{SYNC.last=Object.assign({},remote)}
   setSync('on','Sincronizado com a nuvem');
   scheduleSync(true);
+  if(typeof partnerRefresh==='function')partnerRefresh();
 }
 async function initSync(){
   try{
@@ -673,33 +693,43 @@ function ask(msg,onYes,label='Confirmar',danger=true){
 }
 function render(){
   const y=window.scrollY;const p=P();
-  const nav=(cls)=>TABS.map(([k,l,i])=>`<button data-a="tab" data-t="${k}" ${S.ui.tab===k?'aria-current="page"':''}>${ico(i)}<span>${l}</span></button>`).join('');
-  $('#app').innerHTML=`<main class="main" id="main">${topbar()}${view()}</main><nav class="tabbar" aria-label="Navegação"><div class="tbi">${nav()}</div></nav>`;
+  const pt=(typeof partnerTab==='function')?partnerTab():null;const tabs=pt?TABS.concat([pt]):TABS;
+  const nav=tabs.map(([k,l,i])=>`<button data-a="tab" data-t="${k}" ${S.ui.tab===k?'aria-current="page"':''}>${ico(i)}<span>${esc(k==='cal'&&pt?'Agenda':l)}</span></button>`).join('');
+  $('#app').innerHTML=`<main class="main${S.ui.tab==='par'?' ro':''}" id="main">${topbar()}${view()}</main><nav class="tabbar" aria-label="Navegação"><div class="tbi${pt?' t7':''}">${nav}</div></nav>`;
   drawCharts();window.scrollTo(0,y);if(typeof keepAwake==='function')keepAwake(wantAwake());
 }
-function needsDate(){const t=S.ui.tab;return t==='hoje'||(t==='dieta'&&sub('dieta','dia')==='dia')||(t==='treino'&&sub('treino','sessao')==='sessao')}
+function needsDate(){const t=S.ui.tab;
+  if(t==='par'){if(!(typeof partnerProfile==='function'&&partnerProfile()))return false;const q=S.ui.psec||'resumo';return q==='hoje'||(q==='dieta'&&sub('dieta','dia')==='dia')||(q==='treino'&&sub('treino','sessao')==='sessao')}
+  return t==='hoje'||(t==='dieta'&&sub('dieta','dia')==='dia')||(t==='treino'&&sub('treino','sessao')==='sessao')}
 function topbar(){
-  const p=P(),d=D();
-  return `<div class="top"><button class="who" data-a="profiles" aria-label="Trocar de pessoa"><span class="av">${esc((p.name||'?').trim().charAt(0).toUpperCase())}</span>${esc(p.name)}</button>
+  const fp=S.ui.tab==='par'&&typeof partnerProfile==='function'?partnerProfile():null;const p=fp||P(),d=D();const ro=!!fp;
+  return `<div class="top">${ro?'':`<button class="who" data-a="profiles" aria-label="Trocar de pessoa"><span class="av">${esc((p.name||'?').trim().charAt(0).toUpperCase())}</span>${esc(p.name)}</button>`}
   ${needsDate()?`<div class="datenav"><button data-a="dprev" aria-label="Dia anterior">${ico('left')}</button><input type="date" id="dpick" data-c="dpick" value="${d}" style="border:0;background:none;min-height:34px;padding:0 4px;width:138px;text-align:center;font-weight:600" aria-label="Escolher dia"><button data-a="dnext" aria-label="Próximo dia">${ico('right')}</button></div>${d!==todayStr()?`<button class="btn sm" data-a="dtoday">Hoje</button>`:''}`:''}
   <span class="sp"></span><span id="syncdot" class="sync ${SYNC.state==='on'?'on':SYNC.state==='err'?'err':''}" title="${esc(SYNC.msg)}" aria-label="${esc(SYNC.msg)}"><i></i></span></div>`;
 }
 function view(){
-  switch(S.ui.tab){case 'dieta':return vDieta();case 'treino':return vTreino();case 'corpo':return vCorpo();case 'cal':return vCal();case 'mais':return vMais();default:return vHoje()}
+  switch(S.ui.tab){case 'par':return typeof vPar==='function'?vPar():vHoje();case 'dieta':return vDieta();case 'treino':return vTreino();case 'corpo':return vCorpo();case 'cal':return vCal();case 'mais':return vMais();default:return vHoje()}
 }
 function tabsHtml(tabKey,items,def){const cur=sub(tabKey,def);return `<div class="tabs" role="tablist">${items.map(([k,l])=>`<button role="tab" aria-selected="${cur===k}" data-a="sub" data-t="${tabKey}" data-s="${k}">${l}</button>`).join('')}</div>`}
-document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el)return;const f=A[el.dataset.a];if(f){e.preventDefault();f(el,e)}});
-document.addEventListener('change',e=>{const el=e.target.closest('[data-c]');if(el&&I[el.dataset.c])I[el.dataset.c](el,e)});
-document.addEventListener('input',e=>{const el=e.target.closest('[data-i]');if(el&&I[el.dataset.i])I[el.dataset.i](el,e)});
+/* na tela do amigo (somente leitura) só passam as ações de navegação e de visualização */
+const RO_A=['sub','goday','godieta','gotreino','tab','close','histf'],RO_I=['exsel','msel'];
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el)return;
+  if(el.closest('.rocontent')&&!RO_A.includes(el.dataset.a)){e.preventDefault();toast('Perfil do amigo: somente leitura');return}
+  const f=A[el.dataset.a];if(f){e.preventDefault();f(el,e)}});
+document.addEventListener('change',e=>{const el=e.target.closest('[data-c]');if(!el)return;if(el.closest('.rocontent')&&!RO_I.includes(el.dataset.c))return;if(I[el.dataset.c])I[el.dataset.c](el,e)});
+document.addEventListener('input',e=>{const el=e.target.closest('[data-i]');if(!el)return;if(el.closest('.rocontent'))return;if(I[el.dataset.i])I[el.dataset.i](el,e)});
 A.close=()=>closeModal();
-const TABKEYS=TABS.map(t=>t[0]);
+const TABKEYS=[...TABS.map(t=>t[0]),'par'];
+const PSECS=['hoje','dieta','treino','corpo','cal'];
+/* dentro da tela do amigo, "ir para dieta/treino/dia" troca a seção dele, não sai dela */
+function goIn(k){if(S.ui.tab==='par'&&PSECS.includes(k)){S.ui.psec=k;return}goTab(k)}
 function goTab(k){if(k===S.ui.tab&&location.hash==='#'+k)return;try{history.pushState({t:k},'','#'+k)}catch(e){}S.ui.tab=k}
 addEventListener('popstate',()=>{let k=(location.hash||'').slice(1);if(!TABKEYS.includes(k))k='hoje';if(k!==S.ui.tab){S.ui.tab=k;save();render();window.scrollTo(0,0)}});
-A.tab=el=>{if(el.dataset.t===S.ui.tab){window.scrollTo({top:0,behavior:'smooth'});return}goTab(el.dataset.t);save();render();window.scrollTo(0,0)};
+A.tab=el=>{if(!el.closest('.tabbar')){goIn(el.dataset.t);save();render();window.scrollTo(0,0);return}if(el.dataset.t===S.ui.tab){window.scrollTo({top:0,behavior:'smooth'});return}goTab(el.dataset.t);save();render();window.scrollTo(0,0)};
 A.sub=el=>{S.ui.sub[el.dataset.t]=el.dataset.s;save();render()};
 A.dprev=()=>{S.ui.date=addDays(D(),-1);render()};A.dnext=()=>{S.ui.date=addDays(D(),1);render()};A.dtoday=()=>{S.ui.date=null;render()};
 I.dpick=el=>{if(el.value){S.ui.date=el.value===todayStr()?null:el.value;render()}};
-A.goday=el=>{S.ui.date=el.dataset.d===todayStr()?null:el.dataset.d;goTab(el.dataset.t||'hoje');save();render();window.scrollTo(0,0)};
+A.goday=el=>{S.ui.date=el.dataset.d===todayStr()?null:el.dataset.d;goIn(el.dataset.t||'hoje');save();render();window.scrollTo(0,0)};
 
 /* pessoas */
 A.profiles=()=>{
@@ -795,8 +825,8 @@ A.mealq=el=>{const p=P(),d=D(),dl=ensureDay(p,d),id=el.dataset.m,s=dl.meals[id];
 A.water=el=>{const dl=ensureDay(P(),D());const v=+el.dataset.v;dl.water=(dl.water||0)+v;dl.wlog.push(v);save();render()};
 A.waterundo=()=>{const dl=ensureDay(P(),D());const v=dl.wlog.pop();if(v){dl.water=Math.max(0,dl.water-v);save();render()}else toast('Nada para desfazer')};
 A.cre=el=>{const dl=ensureDay(P(),D());const i=+el.dataset.i;dl.cre[i]=!dl.cre[i];save();render()};
-A.godieta=()=>{goTab('dieta');S.ui.sub.dieta='dia';save();render();window.scrollTo(0,0)};
-A.gotreino=()=>{goTab('treino');S.ui.sub.treino='sessao';save();render();window.scrollTo(0,0)};
+A.godieta=()=>{goIn('dieta');S.ui.sub.dieta='dia';save();render();window.scrollTo(0,0)};
+A.gotreino=()=>{goIn('treino');S.ui.sub.treino='sessao';save();render();window.scrollTo(0,0)};
 A.qweight=()=>{const v=num($('#qw').value);if(v==null||v<20||v>400){toast('Informe um peso válido em kg');return}upsertBody(P(),{date:D(),weight:v});save();render();toast('Peso salvo')};
 I.dnote=el=>{const dl=ensureDay(P(),D());dl.note=el.value;save()};
 function upsertBody(p,f){let b=p.body.find(x=>x.date===f.date);if(!b){b={id:uid(),date:f.date};p.body.push(b)}
@@ -1178,7 +1208,7 @@ async function initSync(){
         const col=FB.fs.collection('users').doc(u.uid).collection('parts');
         SYNC.ref={get:async()=>{const s=await col.get();return {docs:s.docs.map(d=>({id:d.id,data:()=>d.data()}))}},doc:k=>({set:v=>col.doc(k).set(v)})};
         try{await syncPull()}catch(e){setSync('err',fbMsg(e))}
-      }else{SYNC.ref=null;setSync('local','Entre na conta para sincronizar')}
+      }else{SYNC.ref=null;setSync('local','Entre na conta para sincronizar');if(typeof partnerRefresh==='function')partnerRefresh()}
       refreshCloud()});
     addEventListener('online',()=>{if(SYNC.ref)scheduleSync(true)});
   }catch(e){setSync('local','Sem conexão com a nuvem agora');FB.err='Não consegui carregar o Firebase. Verifique a internet.';refreshCloud()}
@@ -1210,6 +1240,198 @@ A.cloudreset=()=>cloudDo(async()=>{const {e}=cl();if(!e){FB.msg='Digite o e-mail
 A.cloudout=()=>cloudDo(async()=>{await FB.auth.signOut()});
 A.cloudsync=()=>cloudDo(async()=>{await syncPull();await pushSync();FB.msg='Sincronizado às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+
+/* ========== amigo: ver o perfil do outro (somente leitura, ao vivo) ==========
+   Cada pessoa continua gravando só na própria conta (users/<uid>/parts). Para o outro poder LER, a pessoa
+   cria um documento users/<uid>/readers/<uid-do-amigo>; a regra do Firestore libera a leitura de "parts"
+   só para quem tem esse documento. O "código" que se troca é o uid da conta (não dá para adivinhar). */
+const PT={uid:null,parts:{},st:null,p:null,at:0,err:'',unsub:null};
+const ptKey=u=>'diariofit.amigo.'+u;
+const partnerProfile=()=>PT.p;
+function firstName(n){return String(n||'').trim().split(/\s+/)[0].slice(0,8)||'Amigo'}
+function partnerTab(){
+  if(!cfgOk())return null;
+  if(!S.partner&&!FB.user)return null;
+  return ['par',firstName((PT.p&&PT.p.name)||(S.partner&&S.partner.name)),'users'];
+}
+function relT(ts){
+  if(!ts)return 'sem registros';const m=Math.round((Date.now()-ts)/60000);
+  if(m<1)return 'agora';if(m<60)return `há ${m} min`;const h=Math.round(m/60);if(h<24)return `há ${h} h`;const d=Math.round(h/24);return `há ${d} dia${d>1?'s':''}`;
+}
+function rebuildPT(){
+  try{
+    const st=fromParts(PT.parts);if(!st){PT.st=PT.p=null;return}
+    migrate(st);PT.st=st;PT.p=st.profiles[st.active]||Object.values(st.profiles)[0]||null;PT.at=st.updatedAt||0;
+    if(PT.p&&S.partner&&S.partner.name!==PT.p.name){S.partner.name=PT.p.name;save()}
+  }catch(e){PT.st=PT.p=null}
+}
+function partnerLoadCache(){
+  if(!S.partner||!S.partner.uid)return;
+  try{const raw=localStorage.getItem(ptKey(S.partner.uid));if(raw){PT.uid=S.partner.uid;PT.parts=JSON.parse(raw);rebuildPT()}}catch(e){}
+}
+function stopPartner(){if(PT.unsub){try{PT.unsub()}catch(e){}}PT.unsub=null}
+let paintT=null;
+function paint(){
+  clearTimeout(paintT);
+  paintT=setTimeout(()=>{
+    const ae=document.activeElement,typing=!!(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+    if(S.ui.tab==='par'){if(!typing)render();return}
+    const c=$('#ptcard');if(c)c.outerHTML=partnerCard();
+    const has=!!document.querySelector('.tbar [data-t="par"],.tbi [data-t="par"]');
+    if(has!==!!partnerTab()&&!typing)render();
+  },120);
+}
+function partnerRefresh(){
+  const want=(FB.user&&S.partner&&S.partner.uid)||null;
+  if(!want){stopPartner();if(!S.partner){PT.uid=null;PT.parts={};PT.st=PT.p=null;PT.err=''}paint();return}
+  if(PT.uid===want&&PT.unsub)return;
+  stopPartner();
+  if(PT.uid!==want){PT.uid=want;PT.parts={};PT.st=PT.p=null}
+  PT.err='';
+  try{
+    PT.unsub=FB.fs.collection('users').doc(want).collection('parts').onSnapshot(snap=>{
+      const parts={};snap.docs.forEach(d=>{const v=d.data();if(v&&typeof v.j==='string')parts[d.id]=v.j});
+      if(parts.meta){PT.err='';PT.parts=parts;try{localStorage.setItem(ptKey(want),JSON.stringify(parts))}catch(e){}rebuildPT()}
+      else if(!PT.p){PT.err='empty'}
+      paint();
+    },err=>{
+      PT.err=(err&&err.code)==='permission-denied'?'denied':'net';PT.unsub=null;paint();
+      setTimeout(()=>{if(PT.uid===want&&!PT.unsub&&FB.user)partnerRefresh()},PT.err==='denied'?15000:30000);
+    });
+  }catch(e){PT.err='net'}
+  paint();
+}
+
+/* ----- cartão de conexão (Ajustes e aba do amigo) ----- */
+function partnerCard(){
+  if(!cfgOk())return '';
+  const u=FB.user;let body;
+  if(!FB.ready)body=`<p class="small muted">Conectando ao Firebase…</p>`;
+  else if(!u)body=`<p class="small muted">Entre na sua conta (cartão acima) para conectar com seu amigo.</p>`;
+  else{
+    const code=u.uid,msg=encodeURIComponent('Esse é o meu código do Diário Fit: '+code);
+    let st;
+    if(S.partner){
+      const nm=esc((PT.p&&PT.p.name)||S.partner.name||'seu amigo');
+      st=PT.p?`<span class="pill ok">Conectado com ${nm}</span><p class="small muted" style="margin:8px 0">Você libera seus dados para ele e vê os dele. Se ele ainda não vê os seus, peça para colar o seu código no app dele.</p>`
+        :PT.err==='denied'?`<span class="pill warn">Aguardando</span><p class="small muted" style="margin:8px 0">Ainda sem acesso aos dados dele. Peça para seu amigo colar o <b>seu código</b> no app dele (aba Amigo) e confira se o código que você colocou está certo. Eu tento de novo sozinho a cada 15 segundos.</p>`
+        :`<span class="pill">Conectando…</span><p class="small muted" style="margin:8px 0">${PT.err==='net'?'Sem conexão agora; tento de novo daqui a pouco.':'Buscando os dados dele.'}</p>`;
+      st+=`<div class="row"><button class="btn" data-a="prefresh">Atualizar</button><button class="btn danger" data-a="punlink">Desconectar</button></div>`;
+    }else{
+      st=`<label class="f">Código do seu amigo<input type="text" id="pc_in" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Cole aqui o código dele"></label>
+        <div class="row" style="margin-top:10px"><button class="btn pri" data-a="pset">Conectar</button></div>`;
+    }
+    body=`<p class="small muted" style="margin-bottom:10px">Para um ver o progresso do outro, cada um cola aqui o código do outro. Cada um continua editando só o seu perfil.</p>
+      <div class="upper small" style="margin-bottom:4px">Seu código</div><div class="codebox" id="mycode">${esc(code)}</div>
+      <div class="row" style="margin:8px 0 14px"><button class="btn" data-a="pcopy">Copiar</button><a class="btn" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener">Enviar pelo WhatsApp</a></div>${st}`;
+  }
+  return `<div class="card" id="ptcard"><div class="ch"><h3>Amigo</h3></div>${body}</div>`;
+}
+A.pcopy=async()=>{
+  const c=FB.user&&FB.user.uid;if(!c)return;
+  try{await navigator.clipboard.writeText(c);toast('Código copiado')}
+  catch(e){const el=$('#mycode');if(el){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)}toast('Segure sobre o código para copiar')}
+};
+A.pset=async()=>{
+  const code=(($('#pc_in')||{}).value||'').trim();
+  if(!FB.user){toast('Entre na sua conta primeiro');return}
+  if(!/^[A-Za-z0-9]{20,40}$/.test(code)){toast('Código inválido. Cole o código completo do seu amigo.');return}
+  if(code===FB.user.uid){toast('Esse é o seu próprio código.');return}
+  try{await FB.fs.collection('users').doc(FB.user.uid).collection('readers').doc(code).set({at:Date.now()})}
+  catch(e){toast(fbMsg(e));return}
+  S.partner={uid:code,name:''};save();partnerRefresh();render();toast('Conectado. Agora seu amigo precisa colar o seu código.');
+};
+A.punlink=()=>ask('Desconectar do seu amigo? Ele deixa de ver os seus dados e você deixa de ver os dele.',async()=>{
+  const old=S.partner&&S.partner.uid;
+  try{if(old&&FB.user)await FB.fs.collection('users').doc(FB.user.uid).collection('readers').doc(old).delete()}catch(e){toast(fbMsg(e));return}
+  stopPartner();try{if(old)localStorage.removeItem(ptKey(old))}catch(e){}
+  S.partner=null;S.ui.psec='resumo';PT.uid=null;PT.parts={};PT.st=PT.p=null;PT.err='';save();render();toast('Desconectado');
+},'Desconectar');
+A.prefresh=()=>{stopPartner();PT.err='';partnerRefresh();toast('Atualizando…')};
+A.psec=el=>{S.ui.psec=el.dataset.s;save();render();window.scrollTo(0,0)};
+A.pgoset=()=>{goTab('mais');S.ui.sub.mais='ajustes';save();render();window.scrollTo(0,0)};
+
+/* ----- números para o resumo comparativo ----- */
+function pStats(p){
+  const d=todayStr(),w=schedOf(p,d),wk=p.plan.workouts[w],sess=sessionOf(p,d),tt=dayTotals(p,d),tg=dayTarget(p,d),dl=getDay(p,d),doses=creDoses(p,d),ent=p.body.find(b=>b.date===d&&b.weight!=null);
+  let tN=0,tD=0,dN=0,dD=0,cN=0,cD=0,wN=0;
+  for(let i=0;i<7;i++){const x=addDays(d,-i);if(x<p.start||x>p.end)continue;
+    const tk=trainOK(p,x);if(schedOf(p,x)!=='R'&&(x<d||tk===true)){tD++;if(tk===true)tN++}
+    const dk=dietOK(p,x);if(x<d||dk===true){dD++;if(dk===true)dN++}
+    const ck=creOK(p,x);if(ck!==null&&(x<d||ck===true)){cD++;if(ck===true)cN++}
+    if(p.body.some(b=>b.date===x&&b.weight!=null))wN++}
+  let streak=0;for(let x=d;x>=p.start;x=addDays(x,-1)){if(x>p.end)continue;const tk=trainOK(p,x);if(tk===true)streak++;else if(tk===null)continue;else if(x===d)continue;else break}
+  const done=p.sessions.filter(sessDone);
+  return {d,w,wk,sess,tt,tg,dl,doses,ent,tN,tD,dN,dD,cN,cD,wN,streak,sessN:done.length,vol:done.reduce((a,s)=>a+setsVol(s),0),bs:bodyStats(p),trained:!!(sess&&sessDone(sess)),creTaken:doses.filter((_,i)=>dl.cre[i]).length};
+}
+function vPResumo(me,fr){
+  const a=pStats(me),b=pStats(fr),nm=fr.name.split(/\s+/)[0];
+  const tp=s=>s.w==='R'?'<span class="pill">Descanso</span>':s.trained?'<span class="pill ok">Feito</span>':'<span class="pill warn">Pendente</span>';
+  const tw=s=>s.w==='R'?'':`<div class="tiny faint">${s.w} · ${esc(s.wk?s.wk.name:'')}</div>`;
+  const row=(l,x,y)=>`<div>${l}</div><div>${x}</div><div>${y}</div>`;
+  const table=(rows)=>`<div class="cmpg"><div class="h"></div><div class="h">Você</div><div class="h">${esc(nm)}</div>${rows}</div>`;
+  const frac=(n,d)=>d?`<b>${n}</b> / ${d}`:'—';
+  const kg=s=>s.bs.lost!=null?(s.bs.lost>=0?'−':'+')+f1(Math.abs(s.bs.lost))+' kg':'—';
+  const pc=s=>s.bs.pct!=null?f0(clamp(s.bs.pct*100,-999,999))+'%':'—';
+  const hoje=table(
+    row('Treino',tp(a)+tw(a),tp(b)+tw(b))+
+    row('Refeições feitas',frac(a.tt.done,a.tt.total),frac(b.tt.done,b.tt.total))+
+    row('Calorias (kcal)',`<b>${f0(a.tt.kcal)}</b> / ${f0(a.tg.kcal)}`,`<b>${f0(b.tt.kcal)}</b> / ${f0(b.tg.kcal)}`)+
+    row('Água',`<b>${f1((a.dl.water||0)/1000,2)}</b> L`,`<b>${f1((b.dl.water||0)/1000,2)}</b> L`)+
+    row('Creatina (doses)',a.doses.length?frac(a.creTaken,a.doses.length):'—',b.doses.length?frac(b.creTaken,b.doses.length):'—')+
+    row('Peso de hoje',a.ent?f1(a.ent.weight)+' kg':'—',b.ent?f1(b.ent.weight)+' kg':'—'));
+  const sem=table(
+    row('Treinos feitos',frac(a.tN,a.tD),frac(b.tN,b.tD))+
+    row('Dias de dieta ✔',frac(a.dN,a.dD),frac(b.dN,b.dD))+
+    row('Dias de creatina ✔',frac(a.cN,a.cD),frac(b.cN,b.cD))+
+    row('Pesagens',`<b>${a.wN}</b>`,`<b>${b.wN}</b>`)+
+    row('Sequência de treinos',`<b>${a.streak}</b>`,`<b>${b.streak}</b>`));
+  const tot=table(
+    row('Treinos feitos',`<b>${a.sessN}</b>`,`<b>${b.sessN}</b>`)+
+    row('Volume total',`<b>${f1(a.vol/1000)}</b> t`,`<b>${f1(b.vol/1000)}</b> t`)+
+    row('Peso perdido',kg(a),kg(b))+
+    row('Da meta mínima',pc(a),pc(b))+
+    row('Cintura',a.bs.waistLast!=null?f1(a.bs.waistLast)+' cm':'—',b.bs.waistLast!=null?f1(b.bs.waistLast)+' cm':'—'));
+  const lossSer=(p,name,color)=>{const w=weightsOf(p);if(!w.length)return {name,color,pts:[]};const base=w[0].weight;return {name,color,pts:w.map(x=>({x:diffDays(x.date,me.start),y:base-x.weight}))}};
+  const ser=[lossSer(me,'Você','var(--brand)'),lossSer(fr,nm,'var(--lo)')];
+  const x1=Math.max(diffDays(me.end,me.start),...ser.flatMap(s=>s.pts.map(q=>q.x)),1);
+  const chart=chartLine('pcmp',{series:ser,epoch:me.start,x0:0,x1,h:210,today:diffDays(todayStr(),me.start),label:'Peso perdido desde a primeira pesagem',yfmt:v=>f1(v)+' kg'});
+  const msgs=[];
+  if(b.w!=='R'&&!b.trained)msgs.push(['Cobrar treino',`E aí, ${nm}! Hoje é treino ${b.w}${b.wk?' ('+b.wk.name+')':''}. Já foi?`]);
+  if(b.tt.done<b.tt.total)msgs.push(['Cobrar dieta',`${nm}, como está a dieta hoje? Já registrou as refeições no app?`]);
+  if(b.trained)msgs.push(['Dar os parabéns',`Boa, ${nm}! Vi que você treinou hoje. Segue assim!`]);
+  const wa=(l,t)=>`<a class="btn" href="https://wa.me/?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">${esc(l)}</a>`;
+  return `<div class="stack">
+   <div class="card"><div class="ch"><h3>Hoje</h3><span class="small muted">${WD[dow(a.d)]} ${fmtD(a.d)}</span></div>${hoje}</div>
+   <div class="card"><div class="ch"><h3>Últimos 7 dias</h3></div>${sem}<p class="tiny faint" style="margin-top:8px">O dia de hoje só entra na conta depois de cumprido.</p></div>
+   <div class="card"><div class="ch"><h3>Desde o início</h3></div>${tot}</div>
+   <div class="card"><div class="ch"><h3>Perda de peso</h3></div>${chart}</div>
+   <div class="card"><div class="ch"><h3>Cobrar ${esc(nm)}</h3></div><p class="small muted" style="margin-bottom:10px">Abre o WhatsApp com a mensagem pronta; você escolhe a conversa e envia.</p><div class="row" style="flex-wrap:wrap">${msgs.map(m=>wa(m[0],m[1])).join('')||'<span class="small muted">Nada para cobrar agora.</span>'}</div></div></div>`;
+}
+
+/* ----- aba do amigo ----- */
+function vPar(){
+  if(!cfgOk())return `<div class="card"><p class="muted">A nuvem ainda não foi configurada neste app (veja o guia).</p></div>`;
+  if(!S.partner)return `<div class="stack"><div class="note"><b>Veja o progresso do seu amigo e deixe ele ver o seu.</b> Cada um edita só o seu perfil; o outro só consegue olhar. Troquem os códigos abaixo.</div>${partnerCard()}</div>`;
+  if(!PT.p)return `<div class="stack">${partnerCard()}</div>`;
+  const me=S.profiles[S.active],p=PT.p,cur=S.ui.psec||'resumo';
+  const secs=[['resumo','Resumo'],['hoje','Hoje'],['dieta','Dieta'],['treino','Treino'],['corpo','Corpo'],['cal','Calendário']];
+  const bar=`<div class="pbar"><span class="av">${esc((p.name||'?').trim().charAt(0).toUpperCase())}</span><div class="sp" style="min-width:0"><b>${esc(p.name)}</b><div class="small muted">Somente leitura · última atividade ${relT(PT.at)}${PT.err==='net'?' · sem conexão, mostrando o último que recebi':PT.err==='denied'?' · acesso removido, mostrando o último que recebi':''}</div></div><button class="btn sm" data-a="pgoset">Conexão</button></div>`;
+  const tabs=`<div class="tabs" role="tablist" style="margin-top:12px">${secs.map(([k,l])=>`<button role="tab" aria-selected="${cur===k}" data-a="psec" data-s="${k}">${l}</button>`).join('')}</div>`;
+  let inner='';RO=p;
+  try{
+    switch(cur){
+      case 'hoje':inner=vHoje();break;
+      case 'dieta':if(sub('dieta','dia')==='alimentos')S.ui.sub.dieta='dia';inner=vDieta();break;
+      case 'treino':inner=vTreino();break;
+      case 'corpo':inner=vMedidas();break;
+      case 'cal':inner=vCal();break;
+      default:inner=vPResumo(me,p);
+    }
+  }catch(e){console.error(e);inner=`<div class="note warn">Não consegui montar esta tela com os dados do seu amigo.</div>`}
+  finally{RO=null}
+  return bar+tabs+`<div class="rocontent">${inner}</div>`;
+}
 
 /* ========== CALENDÁRIO ========== */
 function vCal(){
@@ -1314,7 +1536,7 @@ function vAjustes(){
    ${np>1?`<div class="row" style="margin-top:12px"><button class="btn danger sm" data-a="delprof">Excluir ${esc(p.name)}</button></div>`:''}</div>
   <div class="card"><div class="ch"><h3>Rotina da semana</h3></div><p class="small muted" style="margin-bottom:10px">Dias de carbo alto (laranja) e treino de cada dia.</p>
    <div class="stack" style="gap:8px">${[1,2,3,4,5,6,0].map(i=>`<div class="row"><span style="width:44px;font-weight:700">${WD[i]}</span><button class="chip" aria-pressed="${p.plan.carbHigh.includes(i)}" data-a="hitoggle" data-i="${i}">Carbo ${p.plan.carbHigh.includes(i)?'alto':'baixo'}</button><select data-c="sched" data-i="${i}" style="flex:1;min-width:150px">${wopt(p.plan.sched[i]||'R')}</select></div>`).join('')}</div></div>
-  ${typeof cloudCard==='function'?cloudCard():''}
+  ${typeof cloudCard==='function'?cloudCard():''}${typeof partnerCard==='function'?partnerCard():''}
   <div class="card"><div class="ch"><h3>Backup e dados</h3></div>
    <p class="small muted" style="margin-bottom:10px">${SYNC.state==='on'?'Seus dados também estão guardados na nuvem da sua conta, por pessoa e por mês.':'Seus dados ficam neste navegador. Se limpar os dados do site ou trocar de aparelho, eles somem: exporte um backup de vez em quando.'}${memOnly?' <b>O armazenamento local está bloqueado neste contexto: os dados valem só até fechar a página.</b>':''}</p>
    <div class="row"><button class="btn pri" data-a="exportjson">${ico('down')}Exportar backup (JSON)</button><button class="btn" data-a="importmodal">${ico('up')}Importar backup</button></div>
@@ -1352,7 +1574,7 @@ A.csv=el=>{const p=P(),k=el.dataset.k,q=v=>'"'+String(v==null?'':v).replace(/"/g
 
 /* ========== inicialização ========== */
 let rzT=null;addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(drawCharts,150)});
-loadState();
+loadState();if(typeof partnerLoadCache==='function')partnerLoadCache();
 {const h=(location.hash||'').slice(1);if(TABKEYS.includes(h))S.ui.tab=h;try{history.replaceState({t:S.ui.tab},'','#'+S.ui.tab)}catch(e){}}
 document.body.insertAdjacentHTML('beforeend','<div id="toast" aria-live="polite"></div><div id="rest" hidden></div>');
 render();
