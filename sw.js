@@ -1,5 +1,5 @@
 /* Diário Fit: cache para abrir sem internet. Os dados ficam no aparelho (e na nuvem, se configurada). */
-const CACHE='diariofit-v4';
+const CACHE='diariofit-v5';
 const SHELL=['./','./index.html','./firebase-config.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
