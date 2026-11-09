@@ -164,29 +164,8 @@ table.tbl td.wrap{white-space:normal}
 .chk{width:46px;height:46px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface2);display:grid;place-items:center;color:transparent}
 .chk[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
 .ssb{background:var(--lo-soft);color:var(--lo);border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;letter-spacing:.05em}
-#rest{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 10px 8px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
-#rest .rt{font-family:var(--f-display);font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;min-width:68px}
-#rest button{border:0;background:rgba(127,127,127,.28);color:inherit;border-radius:999px;padding:7px 12px;font-weight:600;font-size:13px}
 
 
-/* calendar */
-.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.cal .h{font-size:11.5px;font-weight:700;text-align:center;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;padding-bottom:2px}
-.cd{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:5px 5px 6px;min-height:76px;display:flex;flex-direction:column;gap:3px;text-align:left;position:relative;overflow:hidden;min-width:0}
-.cd::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--rest)}
-.cd.hi::before{background:var(--hi)} .cd.lo::before{background:var(--lo)}
-.cd.off{background:transparent;border-style:dashed;opacity:.55}
-.cd.today{outline:2px solid var(--brand);outline-offset:1px}
-.cd.sel{background:var(--brand-soft)}
-.cd .n{font-family:var(--f-display);font-size:19px;font-weight:600;line-height:1;margin-top:4px}
-.cd .t{font-size:10.5px;font-weight:700;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cd .dots{display:flex;gap:3px;margin-top:auto;flex-wrap:wrap}
-.dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink3);display:inline-block}
-.dot.on{background:var(--ok);border-color:var(--ok)}
-.dot.no{border-color:var(--bad);background:var(--bad)}
-.dot.w.on{background:var(--lo);border-color:var(--lo)} .dot.c.on{background:var(--hi);border-color:var(--hi)}
-.cd .ev{position:absolute;right:4px;top:9px;width:7px;height:7px;border-radius:2px;background:var(--brand);transform:rotate(45deg)}
-@media (max-width:520px){.cal{gap:3px}.cd{min-height:62px;padding:4px 3px}.cd .t{display:none}.cd .n{font-size:17px}.dot{width:7px;height:7px}}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
@@ -228,7 +207,7 @@ details.acc .accb{padding:0 14px 14px;display:flex;flex-direction:column;gap:10p
 .edrow{display:grid;grid-template-columns:minmax(0,2fr) 54px 74px minmax(0,1.3fr) 60px auto;gap:6px;align-items:center}
 @media (max-width:640px){.edrow{grid-template-columns:minmax(0,1fr) 1fr 1fr;} .edrow .nm{grid-column:1/-1}}
 .edrow input{padding:7px 8px;min-height:42px}
-#rest[hidden],.tip[hidden],.ov[hidden]{display:none!important}
+.tip[hidden],.ov[hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* tela do amigo: somente leitura (só navegação fica ativa) */
 .rocontent [data-a]{pointer-events:none}
@@ -287,6 +266,7 @@ const ICO={
  dumb:'<path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/>',
  body:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8 9.5a5.2 3.4 0 0 1 8 0M12 10l1.8-1.8"/>',
  cal:'<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+ book:'<path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5v13"/>',
  more:'<circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',
  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>',
@@ -702,7 +682,7 @@ function bindTip(el,sp){
 
 /* ========== shell, eventos, modal, toast ========== */
 const A={}, I={};
-const TABS=[['hoje','Hoje','today'],['dieta','Dieta','food'],['treino','Treino','dumb'],['corpo','Corpo','body'],['cal','Calendário','cal']];
+const TABS=[['hoje','Hoje','today'],['dieta','Dieta','food'],['treino','Treino','dumb'],['corpo','Corpo','body'],['leitura','Leitura','book']];
 const D=()=>S.ui.date||todayStr();
 const sub=(t,def)=>S.ui.sub[t]||def;
 function toast(msg){const box=$('#toast');if(!box)return;const el=document.createElement('div');el.textContent=msg;box.appendChild(el);setTimeout(()=>el.remove(),2800)}
@@ -732,7 +712,7 @@ function topbar(){
   <span class="sp"></span><span id="syncdot" class="sync ${SYNC.state==='on'?'on':SYNC.state==='err'?'err':''}" title="${esc(SYNC.msg)}" aria-label="${esc(SYNC.msg)}"><i></i></span></div>`;
 }
 function view(){
-  switch(S.ui.tab){case 'par':return typeof vPar==='function'?vPar():vHoje();case 'dieta':return vDieta();case 'treino':return vTreino();case 'corpo':return vCorpo();case 'cal':return vCal();case 'mais':return vMais();default:return vHoje()}
+  switch(S.ui.tab){case 'par':return typeof vPar==='function'?vPar():vHoje();case 'dieta':return vDieta();case 'treino':return vTreino();case 'corpo':return vCorpo();case 'leitura':return vLeit();case 'cal':return vLeit();case 'mais':return vMais();default:return vHoje()}
 }
 function tabsHtml(tabKey,items,def){const cur=sub(tabKey,def);return `<div class="tabs" role="tablist">${items.map(([k,l])=>`<button role="tab" aria-selected="${cur===k}" data-a="sub" data-t="${tabKey}" data-s="${k}">${l}</button>`).join('')}</div>`}
 /* na tela do amigo (somente leitura) só passam as ações de navegação e de visualização */
@@ -744,7 +724,7 @@ document.addEventListener('change',e=>{const el=e.target.closest('[data-c]');if(
 document.addEventListener('input',e=>{const el=e.target.closest('[data-i]');if(!el)return;if(el.closest('.rocontent'))return;if(I[el.dataset.i])I[el.dataset.i](el,e)});
 A.close=()=>closeModal();
 const TABKEYS=[...TABS.map(t=>t[0]),'mais','par'];
-const PSECS=['hoje','dieta','treino','corpo','cal'];
+const PSECS=['hoje','dieta','treino','corpo','leitura'];
 /* dentro da tela do amigo, "ir para dieta/treino/dia" troca a seção dele, não sai dela */
 function goIn(k){if(S.ui.tab==='par'&&PSECS.includes(k)){S.ui.psec=k;return}goTab(k)}
 function goTab(k){if(k===S.ui.tab&&location.hash==='#'+k)return;try{history.pushState({t:k},'','#'+k)}catch(e){}S.ui.tab=k}
@@ -819,7 +799,6 @@ function vHoje(){
   const meals=p.plan.diet.meals.map(m=>{const s=dl.meals[m.id];const c=mealCons(p,d,m);const on=s&&s.s&&s.s!=='skip';
     return `<div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><button class="chk" aria-pressed="${!!(s&&s.s&&s.s!=='skip')}" data-a="mealq" data-m="${m.id}" aria-label="Marcar ${esc(m.name)} como feita conforme o plano">${ico('check')}</button>
      <div class="sp" style="min-width:0"><b>${esc(m.name)}</b> <span class="faint small">${m.time}</span><div class="small muted">${s&&s.s==='swap'?'Troca '+(s.i+1):s&&s.s==='custom'?'Outra refeição':s&&s.s==='skip'?'Pulada':'Plano'} · ${f0(on?c.kcal:(hi?m.hi:m.lo))} kcal</div></div></div>`}).join('');
-  const waterGoal=p.plan.water.min,wp=clamp((dl.water||0)/waterGoal*100,0,100);
   h+=`<div class="grid g2" style="margin-top:14px">
    <div class="stack">${totalsCard(p,d)}
     <div class="card"><div class="ch"><h3>Refeições</h3><button class="btn sm" data-a="godieta">Detalhar</button></div>${meals||'<div class="empty">Nenhuma refeição no plano.</div>'}
@@ -827,28 +806,23 @@ function vHoje(){
      <hr class="sep"><div class="row">${trollBtn(p,d)}<span class="small muted sp" style="min-width:160px">${trolled(p,d)?'Registrado: a dieta foi trolada neste dia.':'Só aperte se você sentiu que fugiu da dieta. Pular refeição ou trocar não conta.'}</span></div></div>
    </div>
    <div class="stack">
+    ${readCard(p,d,false)}
     <div class="card"><div class="ch"><h3>Treino</h3>${done?'<span class="pill ok">Feito</span>':w==='R'?'<span class="pill">Descanso</span>':gaved(p,d)?'<span class="pill bad">Givei</span>':'<span class="pill warn">Pendente</span>'}</div>
      ${w==='R'?`<p class="muted">Dia de recuperação${dow(d)===0?' · pesagem e medidas':''}. Se treinar mesmo assim, abra o treino e escolha o que fez.</p>`:`<p><b>${w} — ${esc(wk.name)}</b> <span class="muted">${esc(wk.dur||'')}</span></p><p class="small muted">${wk.phases[phaseOf(wk,d)].label?esc(wk.phases[phaseOf(wk,d)].label)+' · ':''}${wk.phases[phaseOf(wk,d)].ex.length} exercícios${sess&&sess.exercises?` · ${setsDone(sess)} séries feitas`:''}</p>`}
      <div class="row" style="margin-top:10px"><button class="btn pri" data-a="gotreino">${ico('dumb')}${sess&&!sess.finished?'Continuar treino':w==='R'?'Registrar treino extra':'Abrir treino'}</button>${w!=='R'&&!done?givaBtn(p,d):''}</div></div>
-    <div class="card"><div class="ch"><h3>Água</h3><span class="small muted">meta ${f1(p.plan.water.min/1000)}–${f1(p.plan.water.max/1000)} L</span></div>
-     <div class="big">${f1((dl.water||0)/1000,2)}<small>L</small></div><div class="bar ${(dl.water||0)>=waterGoal?'':'lo'}" style="margin:10px 0"><i style="width:${wp}%;${(dl.water||0)>=waterGoal?'':'background:var(--lo)'}"></i></div>
-     <div class="seg">${[200,300,500,750].map(v=>`<button data-a="water" data-v="${v}">+${v} ml</button>`).join('')}<button data-a="waterundo" aria-label="Desfazer último">${ico('left','ico')}Desfazer</button></div></div>
     <div class="card"><div class="ch"><h3>Creatina</h3>${doses.length?`<span class="pill brand">${doses[0].phase}</span>`:''}</div>
      ${doses.length?`<div class="stack" style="gap:8px">${doses.map((x,i)=>`<div class="row"><button class="chk" aria-pressed="${!!dl.cre[i]}" data-a="cre" data-i="${i}" aria-label="Dose ${i+1}">${ico('check')}</button><span class="num"><b>${x.t}</b> · ${f1(x.g,0)} g</span><span class="small muted">${i===0&&doses.length===1?'no café da manhã':''}</span></div>`).join('')}</div><p class="tiny faint" style="margin-top:8px">Dissolvida, junto de uma refeição.</p>`:`<p class="muted small">${d<p.plan.creatine.start?`A creatina começa na ${WDL[dow(p.plan.creatine.start)].toLowerCase()}, ${fmtD(p.plan.creatine.start)}.`:`Fora do período do protocolo (${fmtD(p.plan.creatine.start)} a ${fmtD(p.plan.creatine.end)}).`}</p>`}</div>
     <div class="card"><div class="ch"><h3>Peso do dia</h3>${lastW?`<span class="small muted">último: ${f1(lastW.weight)} kg em ${fmtD(lastW.date)}</span>`:''}</div>
      <div class="row"><input type="number" step="0.1" inputmode="decimal" id="qw" placeholder="kg" value="${ent&&ent.weight!=null?ent.weight:''}" style="max-width:130px"><button class="btn pri" data-a="qweight">Salvar</button><button class="btn" data-a="bodyform" data-d="${d}">Medidas…</button></div></div>
    </div></div>
-   <div class="grid g2" style="margin-top:14px"><div class="card"><div class="ch"><h3>Evolução</h3><button class="btn sm" data-a="tab" data-t="corpo">Ver tudo</button></div>
+   <div style="margin-top:14px"><div class="card"><div class="ch"><h3>Evolução</h3><button class="btn sm" data-a="tab" data-t="corpo">Ver tudo</button></div>
      <div class="tiles" style="margin-bottom:10px"><div class="tile"><span class="upper">Peso atual</span><span class="v">${bs.last?f1(bs.last.weight):'—'}<small> kg</small></span></div>
       <div class="tile"><span class="upper">Perdido</span><span class="v ${bs.lost>0?'pos':''}">${bs.lost!=null?f1(bs.lost):'—'}<small> kg</small></span></div>
       <div class="tile"><span class="upper">Meta mín.</span><span class="v">${bs.pct!=null?f0(clamp(bs.pct*100,-999,999)):'—'}<small>%</small></span></div></div>
-     ${weightChart(p,'hojew',150)}</div>
-    <div class="card"><div class="ch"><h3>Regras do plano</h3></div><ul style="margin:0;padding-left:18px" class="small">${p.plan.diet.rules.concat(p.plan.trainRules||[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div></div>`;
+     ${weightChart(p,'hojew',150)}</div></div>`;
   return h;
 }
 A.mealq=el=>{const p=P(),d=D(),dl=ensureDay(p,d),id=el.dataset.m,s=dl.meals[id];if(s&&s.s){if(s.s==='custom'&&s.foods&&s.foods.length){ask('Desmarcar e apagar os alimentos lançados nesta refeição?',()=>{delete ensureDay(p,d).meals[id];save();render()},'Desmarcar');return}delete dl.meals[id]}else dl.meals[id]={s:'plan'};save();render()};
-A.water=el=>{const dl=ensureDay(P(),D());const v=+el.dataset.v;dl.water=(dl.water||0)+v;dl.wlog.push(v);save();render()};
-A.waterundo=()=>{const dl=ensureDay(P(),D());const v=dl.wlog.pop();if(v){dl.water=Math.max(0,dl.water-v);save();render()}else toast('Nada para desfazer')};
 A.cre=el=>{const dl=ensureDay(P(),D());const i=+el.dataset.i;dl.cre[i]=!dl.cre[i];save();render()};
 A.godieta=()=>{goIn('dieta');S.ui.sub.dieta='dia';save();render();window.scrollTo(0,0)};
 A.gotreino=()=>{goIn('treino');S.ui.sub.treino='sessao';save();render();window.scrollTo(0,0)};
@@ -883,7 +857,7 @@ function mealCard(p,d,m){
   if(st&&st.s==='custom'){
     const foods=st.foods||[];
     body=`<div class="swapbox"><div class="kv"><b>Outra refeição</b><span class="num small muted">subtotal: <span id="ms_${m.id}">${mealSub(st)}</span></span></div>
-    ${foods.map((f,k)=>`<div class="foodrow"><span class="fn">${esc(f.name)} <span class="faint small">${f0(f.kcal*f.g/100)} kcal</span></span><label class="f" style="flex-direction:row;align-items:center;gap:4px"><input type="number" inputmode="decimal" min="0" value="${f.g}" data-i="mfood" data-m="${m.id}" data-k="${k}" aria-label="Gramas de ${esc(f.name)}"><span class="small">g</span></label><button class="iconbtn del" data-a="mfooddel" data-m="${m.id}" data-k="${k}" aria-label="Remover">${ico('x')}</button></div>`).join('')}
+    ${foods.map((f,k)=>`<div class="foodrow"><span class="fn">${esc(f.name)} <span class="faint small">${f0(f.kcal*f.g/100)} kcal</span></span><label class="f" style="flex-direction:row;align-items:center;gap:4px"><input type="number" inputmode="decimal" min="0" value="${f.g}" data-i="mfood" data-m="${m.id}" data-k="${k}" aria-label="Gramas de ${esc(f.name)}"><span class="small">g</span></label><button class="iconbtn" data-a="foodedit" data-w="m" data-m="${m.id}" data-k="${k}" aria-label="Editar ${esc(f.name)}">${ico('edit')}</button><button class="iconbtn del" data-a="mfooddel" data-m="${m.id}" data-k="${k}" aria-label="Remover">${ico('x')}</button></div>`).join('')}
     <div class="row" style="margin-top:8px"><button class="btn sm" data-a="pickfood" data-m="${m.id}">${ico('plus')}Alimento</button><span class="small muted">ou some valores já calculados:</span></div>
     <div class="fields" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-top:6px">${[['mk','kcal'],['mp','P g'],['mc','C g'],['mf','G g']].map(([k,l])=>`<label class="f">${l}<input type="number" inputmode="decimal" min="0" data-i="mman" data-m="${m.id}" data-f="${k}" value="${st[k]||''}"></label>`).join('')}</div></div>`;
   }
@@ -907,7 +881,7 @@ function vDDia(){
   return `<div class="stack">${totalsCard(p,d)}
   <div class="stack">${p.plan.diet.meals.length?p.plan.diet.meals.map(m=>mealCard(p,d,m)).join(''):'<div class="empty">Nenhuma refeição no plano. Adicione em Plano.</div>'}</div>
   <div class="grid g2"><div class="card"><div class="ch"><h3>Fora do plano</h3><button class="btn sm" data-a="pickfood" data-m="">${ico('plus')}Lançar</button></div>
-    ${dl.extras.length?dl.extras.map((f,k)=>`<div class="foodrow"><span class="fn">${esc(f.name)} <span class="faint small">${f0(f.kcal*f.g/100)} kcal</span></span><label class="f" style="flex-direction:row;align-items:center;gap:4px"><input type="number" inputmode="decimal" min="0" value="${f.g}" data-i="xfood" data-k="${k}" aria-label="Gramas"><span class="small">g</span></label><button class="iconbtn del" data-a="xfooddel" data-k="${k}" aria-label="Remover">${ico('x')}</button></div>`).join(''):'<div class="empty">Beliscou algo fora do plano? Lance aqui para a conta fechar.</div>'}
+    ${dl.extras.length?dl.extras.map((f,k)=>`<div class="foodrow"><span class="fn">${esc(f.name)} <span class="faint small">${f0(f.kcal*f.g/100)} kcal</span></span><label class="f" style="flex-direction:row;align-items:center;gap:4px"><input type="number" inputmode="decimal" min="0" value="${f.g}" data-i="xfood" data-k="${k}" aria-label="Gramas"><span class="small">g</span></label><button class="iconbtn" data-a="foodedit" data-w="x" data-k="${k}" aria-label="Editar ${esc(f.name)}">${ico('edit')}</button><button class="iconbtn del" data-a="xfooddel" data-k="${k}" aria-label="Remover">${ico('x')}</button></div>`).join(''):'<div class="empty">Beliscou algo fora do plano? Lance aqui para a conta fechar.</div>'}
    </div>
    <div class="card"><div class="ch"><h3>Dia na dieta</h3>${ok===false?'<span class="pill bad">Trolado</span>':ok===true?'<span class="pill ok">Seguido</span>':'<span class="pill">Em andamento</span>'}</div>
     <p class="small muted" style="margin-bottom:10px">Pular refeição ou fazer troca não quer dizer que você saiu da dieta. Quem decide é você: se sentiu que trolou, aperte o botão. Sem o botão, o dia conta como seguido.</p>
@@ -927,6 +901,32 @@ I.mman=el=>{const dl=ensureDay(P(),D()),st=dl.meals[el.dataset.m];if(!st)return;
 I.xfood=el=>{const dl=ensureDay(P(),D());dl.extras[+el.dataset.k].g=num(el.value)||0;save();patchDiet()};
 A.mfooddel=el=>{const dl=ensureDay(P(),D());dl.meals[el.dataset.m].foods.splice(+el.dataset.k,1);save();render()};
 A.xfooddel=el=>{const dl=ensureDay(P(),D());dl.extras.splice(+el.dataset.k,1);save();render()};
+
+
+/* editar alimento: já lançado numa refeição/fora do plano, ou do banco de alimentos */
+function foodFields(f,gLabel,gVal){
+  return `<label class="f">Nome<input type="text" id="fe_n" value="${esc(f.name||'')}"></label>
+  <div class="fields"><label class="f">${gLabel}<input type="number" id="fe_g" inputmode="decimal" value="${gVal==null?'':gVal}" data-i="fe"></label></div>
+  <p class="small muted">Valores por 100 g (veja o rótulo da embalagem).</p>
+  <div class="fields">${[['k','kcal','kcal'],['p','Proteína (g)','p'],['c','Carboidrato (g)','c'],['f','Gordura (g)','f']].map(([id,l,k])=>`<label class="f">${l}<input type="number" id="fe_${id}" inputmode="decimal" value="${f[k]==null?'':f[k]}" data-i="fe"></label>`).join('')}</div>
+  <div class="small muted num" id="fe_t" style="margin-top:6px"></div>`;
+}
+function foodRead(){const n=$('#fe_n').value.trim(),k=num($('#fe_k').value);if(!n||k==null||k<0)return null;
+  return {name:n,kcal:k,p:num($('#fe_p').value)||0,c:num($('#fe_c').value)||0,f:num($('#fe_f').value)||0,g:num($('#fe_g').value)}}
+I.fe=()=>{const t=$('#fe_t');if(!t)return;const x=foodRead();if(!x||!x.g){t.textContent='';return}const q=x.g/100;t.textContent=`${f0(x.kcal*q)} kcal · P ${f1(x.p*q)} g · C ${f1(x.c*q)} g · G ${f1(x.f*q)} g (na quantidade informada)`};
+A.foodedit=el=>{const dl=getDay(P(),D()),w=el.dataset.w,k=+el.dataset.k;
+  const it=w==='m'?((dl.meals[el.dataset.m]||{}).foods||[])[k]:dl.extras[k];if(!it)return;
+  openModal(`<h3>Editar alimento</h3>${foodFields(it,'Quantidade lançada (g)',it.g)}<div class="mfoot"><button class="btn" data-a="close">Cancelar</button><button class="btn pri" data-a="foodeditok" data-w="${w}" data-m="${esc(el.dataset.m||'')}" data-k="${k}">Salvar</button></div>`);I.fe()};
+A.foodeditok=el=>{const x=foodRead();if(!x){toast('Informe o nome e as kcal por 100 g');return}if(!x.g||x.g<=0){toast('Informe a quantidade em gramas');return}
+  const dl=ensureDay(P(),D()),w=el.dataset.w,k=+el.dataset.k;const it=w==='m'?((dl.meals[el.dataset.m]||{}).foods||[])[k]:dl.extras[k];if(!it){closeModal();return}
+  Object.assign(it,x);save();closeModal();render();toast('Alimento atualizado')};
+A.editfood=el=>{const f=allFoods().find(x=>x.id===el.dataset.id);if(!f)return;const own=f.id.startsWith('c_');
+  openModal(`<h3>${own?'Editar alimento':'Copiar e editar'}</h3>${own?'':'<p class="small muted">Este é da lista base. Salvar cria uma cópia sua, com os valores que você colocar.</p>'}${foodFields(f,'Porção padrão (g)',f.g)}<div class="mfoot"><button class="btn" data-a="close">Cancelar</button><button class="btn pri" data-a="editfoodok" data-id="${esc(f.id)}">Salvar</button></div>`);I.fe()};
+A.editfoodok=el=>{const x=foodRead();if(!x){toast('Informe o nome e as kcal por 100 g');return}
+  const old=allFoods().find(f=>f.id===el.dataset.id);if(!old)return;const own=old.id.startsWith('c_');
+  const nf={id:own?old.id:'c_'+uid(),name:x.name,kcal:x.kcal,p:x.p,c:x.c,f:x.f,g:x.g&&x.g>0?x.g:100,u:own?(old.u||''):''};
+  if(own)S.foods=S.foods.map(f=>f.id===nf.id?nf:f);else S.foods.push(nf);
+  save();closeModal();render();toast(own?'Alimento atualizado':'Cópia criada')};
 
 /* seletor de alimentos */
 let PF=null;
@@ -958,13 +958,13 @@ function vDSem(){
   const p=P(),end=D(),days=[];for(let i=13;i>=0;i--)days.push(addDays(end,-i));
   const rows=days.map(d=>({d,t:dayTotals(p,d),tg:dayTarget(p,d),hi:isHigh(p,d),ok:dietOK(p,d)}));
   const logged=rows.filter(r=>r.t.logged);
-  const avgK=logged.length?logged.reduce((a,r)=>a+r.t.kcal,0)/logged.length:null,avgP=logged.length?logged.reduce((a,r)=>a+r.t.p,0)/logged.length:null,avgW=logged.length?logged.reduce((a,r)=>a+r.t.water,0)/logged.length:null;
+  const avgK=logged.length?logged.reduce((a,r)=>a+r.t.kcal,0)/logged.length:null,avgP=logged.length?logged.reduce((a,r)=>a+r.t.p,0)/logged.length:null;
   const bars=rows.map(r=>({x:fmtD(r.d),y:r.t.kcal,t:r.tg.kcal,color:r.hi?'var(--hi)':'var(--lo)',tip:`<b>${WD[dow(r.d)]} ${fmtD(r.d)}</b><br>${f0(r.t.kcal)} de ${f0(r.tg.kcal)} kcal<br>P ${f0(r.t.p)} g`}));
   return `<div class="stack"><div class="card"><div class="ch"><h3>Últimos 14 dias</h3><span class="small muted">até ${fmtD(end)}</span></div>
-   <div class="tiles" style="margin-bottom:12px"><div class="tile"><span class="upper">Média kcal</span><span class="v">${f0(avgK)}</span></div><div class="tile"><span class="upper">Média proteína</span><span class="v">${f0(avgP)}<small> g</small></span></div><div class="tile"><span class="upper">Média água</span><span class="v">${avgW!=null?f1(avgW/1000,1):'—'}<small> L</small></span></div><div class="tile"><span class="upper">Dias na dieta</span><span class="v">${rows.filter(r=>r.ok===true).length}<small> / 14</small></span></div></div>
+   <div class="tiles" style="margin-bottom:12px"><div class="tile"><span class="upper">Média kcal</span><span class="v">${f0(avgK)}</span></div><div class="tile"><span class="upper">Média proteína</span><span class="v">${f0(avgP)}<small> g</small></span></div><div class="tile"><span class="upper">Trolou</span><span class="v">${rows.filter(r=>r.ok===false).length}<small> dias</small></span></div><div class="tile"><span class="upper">Dias na dieta</span><span class="v">${rows.filter(r=>r.ok===true).length}<small> / 14</small></span></div></div>
    ${chartBar('dsem',{bars,label:'Calorias por dia',legendHtml:`<div class="lg"><span><i style="background:var(--hi);height:9px"></i>Carbo alto</span><span><i style="background:var(--lo);height:9px"></i>Carbo baixo</span><span><i style="background:var(--ink);height:3px"></i>Meta do dia</span></div>`})}</div>
-   <div class="card"><div class="ch"><h3>Dia a dia</h3></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dia</th><th>Tipo</th><th>kcal</th><th>Meta</th><th>P (g)</th><th>Água</th><th>Dieta</th></tr></thead><tbody>
-   ${rows.slice().reverse().map(r=>`<tr><td><button class="btn sm ghost" data-a="goday" data-d="${r.d}" data-t="dieta">${WD[dow(r.d)]} ${fmtD(r.d)}</button></td><td><span class="pill ${r.hi?'hi':'lo'}">${r.hi?'alto':'baixo'}</span></td><td>${r.t.logged?f0(r.t.kcal):'—'}</td><td>${f0(r.tg.kcal)}</td><td>${r.t.logged?f0(r.t.p):'—'}</td><td>${r.t.water?f1(r.t.water/1000,1)+' L':'—'}</td><td>${r.ok===true?'<span class="pos">✔</span>':r.ok===false?'<span class="neg">✘</span>':'—'}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+   <div class="card"><div class="ch"><h3>Dia a dia</h3></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dia</th><th>Tipo</th><th>kcal</th><th>Meta</th><th>P (g)</th><th>Dieta</th></tr></thead><tbody>
+   ${rows.slice().reverse().map(r=>`<tr><td><button class="btn sm ghost" data-a="goday" data-d="${r.d}" data-t="dieta">${WD[dow(r.d)]} ${fmtD(r.d)}</button></td><td><span class="pill ${r.hi?'hi':'lo'}">${r.hi?'alto':'baixo'}</span></td><td>${r.t.logged?f0(r.t.kcal):'—'}</td><td>${f0(r.tg.kcal)}</td><td>${r.t.logged?f0(r.t.p):'—'}</td><td>${r.ok===true?'<span class="pos">✔</span>':r.ok===false?'<span class="neg">✘</span>':'—'}</td></tr>`).join('')}</tbody></table></div></div></div>`;
 }
 function vDPlano(){
   const p=P(),dt=p.plan.diet;
@@ -1008,27 +1008,20 @@ A.delmeal=el=>{const p=P();ask('Excluir esta refeição do plano?',()=>{p.plan.d
 function vDAli(){
   const L=allFoods();
   return `<div class="card"><div class="ch"><h3>Banco de alimentos</h3><button class="btn sm" data-a="newfood">${ico('plus')}Novo</button></div>
-  <p class="small muted" style="margin-bottom:10px">Valores por 100 g, aproximados (TACO/USDA, ±10%). Alimentos criados por você podem ser removidos.</p>
+  <p class="small muted" style="margin-bottom:10px">Valores por 100 g, aproximados (TACO/USDA, ±10%). Os alimentos que você criou podem ser editados ou removidos; nos da lista base, o ícone de copiar cria uma cópia sua para editar.</p>
   <input type="search" id="faq" data-i="faq" placeholder="Buscar alimento…" style="margin-bottom:10px"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Alimento</th><th>kcal</th><th>P</th><th>C</th><th>G</th><th>Porção</th><th></th></tr></thead><tbody id="fatb">${aliRows('')}</tbody></table></div></div>`;
 }
-function aliRows(q){q=q.toLowerCase();return allFoods().filter(f=>!q||f.name.toLowerCase().includes(q)).map(f=>`<tr><td class="wrap">${esc(f.name)}</td><td>${f0(f.kcal)}</td><td>${f1(f.p)}</td><td>${f1(f.c)}</td><td>${f1(f.f)}</td><td>${f.g} g${f.u?' · '+esc(f.u):''}</td><td>${f.id.startsWith('c_')?`<button class="iconbtn del" data-a="delfood" data-id="${f.id}" aria-label="Excluir">${ico('trash')}</button>`:''}</td></tr>`).join('')}
+function aliRows(q){q=q.toLowerCase();return allFoods().filter(f=>!q||f.name.toLowerCase().includes(q)).map(f=>`<tr><td class="wrap">${esc(f.name)}</td><td>${f0(f.kcal)}</td><td>${f1(f.p)}</td><td>${f1(f.c)}</td><td>${f1(f.f)}</td><td>${f.g} g${f.u?' · '+esc(f.u):''}</td><td style="white-space:nowrap">${f.id.startsWith('c_')?`<button class="iconbtn" data-a="editfood" data-id="${f.id}" aria-label="Editar ${esc(f.name)}">${ico('edit')}</button><button class="iconbtn del" data-a="delfood" data-id="${f.id}" aria-label="Excluir">${ico('trash')}</button>`:`<button class="iconbtn" data-a="editfood" data-id="${f.id}" aria-label="Copiar e editar ${esc(f.name)}" title="Copiar e editar">${ico('copy')}</button>`}</td></tr>`).join('')}
 I.faq=el=>{$('#fatb').innerHTML=aliRows(el.value)};
 A.delfood=el=>{S.foods=S.foods.filter(f=>f.id!==el.dataset.id);save();render()};
 
 /* ========== TREINO ========== */
 const TW={};            // treino escolhido por dia (antes de iniciar)
-let RT=null;
 const mmss=s=>pad(Math.floor(s/60))+':'+pad(s%60);
-function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.15;o.start();setTimeout(()=>{o.stop();c.close()},350);if(navigator.vibrate)navigator.vibrate([200,100,200])}catch(e){}}
-function startRest(sec){stopRest(true);S.ui.restSec=sec;RT={end:Date.now()+sec*1000,total:sec};drawRest();RT.iv=setInterval(tickRest,250)}
-function stopRest(silent){if(RT){clearInterval(RT.iv);RT=null}const r=$('#rest');if(r)r.hidden=true}
-function drawRest(){const r=$('#rest');if(!r||!RT)return;r.hidden=false;r.innerHTML=`${ico('timer')}<span class="rt">${mmss(Math.max(0,Math.ceil((RT.end-Date.now())/1000)))}</span><button data-a="rest" data-v="45">45</button><button data-a="rest" data-v="60">60</button><button data-a="rest" data-v="90">90</button><button data-a="reststop" aria-label="Parar">${ico('x')}</button>`}
-function tickRest(){if(!RT)return;const left=Math.ceil((RT.end-Date.now())/1000);if(left<=0){stopRest();beep();toast('Descanso terminado, próxima série');return}const t=$('#rest .rt');if(t)t.textContent=mmss(left)}
 let WL=null;
 async function keepAwake(on){try{if(on&&!WL&&navigator.wakeLock&&document.visibilityState==='visible'){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){await WL.release();WL=null}}catch(e){WL=null}}
 function wantAwake(){const s=sessionOf(P(),todayStr());return !!(s&&!s.finished)}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')keepAwake(wantAwake())});
-A.rest=el=>startRest(+el.dataset.v);A.reststop=()=>stopRest();
 setInterval(()=>{const e=$('#elapsed');if(!e)return;const s=sessionOf(P(),D());if(s&&s.startTs&&!s.finished)e.textContent=mmss(Math.floor((Date.now()-s.startTs)/1000)).replace(/^(\d\d):/,(m,a)=>a+':')},1000);
 
 function vTreino(){
@@ -1090,7 +1083,7 @@ I.setkg=el=>{const s=curSess();s.exercises[+el.dataset.e].sets[+el.dataset.k].kg
 I.setreps=el=>{const s=curSess();s.exercises[+el.dataset.e].sets[+el.dataset.k].reps=el.value;save();patchSess()};
 A.setdone=el=>{const s=curSess(),e=s.exercises[+el.dataset.e],x=e.sets[+el.dataset.k];x.done=!x.done;
   if(x.done){if(navigator.vibrate)try{navigator.vibrate(15)}catch(_){}if(!x.reps&&e.unit!=='s'){const t=topRep(e.reps);if(t)x.reps=String(t)}
-    const nextSS=false;startRest(S.ui.restSec||(e.ss?45:75))}
+}
   save();render()};
 A.addset=el=>{const e=curSess().exercises[+el.dataset.e];const l=e.sets[e.sets.length-1];e.sets.push({kg:l?l.kg:'',reps:'',done:false});save();render()};
 A.rmset=el=>{const e=curSess().exercises[+el.dataset.e];if(e.sets.length>1){e.sets.pop();save();render()}};
@@ -1413,6 +1406,7 @@ function pStats(p){
   let streak=0;for(let x=d;x>=p.start;x=addDays(x,-1)){if(x>p.end)continue;const tk=trainOK(p,x);if(tk===true)streak++;else if(tk===null)continue;else if(x===d)continue;else break}
   const done=p.sessions.filter(sessDone);
   return {d,w,wk,sess,tt,tg,dl,doses,ent,tN,tD,dN,dD,cN,cD,wN,trN,gvN,streak,sessN:done.length,vol:done.reduce((a,s)=>a+setsVol(s),0),bs:bodyStats(p),
+    rd:{page:rdPage(p),total:rdTotal(p),today:rdReadOn(p,d),gap:rdGap(p,d),week:rdWeek(p),rev:rdRevOn(p,d),isRev:!!(rdRow(d)&&rdRow(d).rev)},
     trained:!!(sess&&sessDone(sess)),gived:gaved(p,d)&&!(sess&&sessDone(sess)),trolled:trolled(p,d),creTaken:doses.filter((_,i)=>dl.cre[i]).length};
 }
 const wa=(l,t)=>`<a class="btn" href="https://wa.me/?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">${esc(l)}</a>`;
@@ -1431,7 +1425,7 @@ function vCompare(me,others,group){
     row('Dieta',s=>s.trolled?'<span class="pill bad">Trolou</span>':'<span class="pill ok">Firme</span>')+
     row('Refeições feitas',s=>frac(s.tt.done,s.tt.total))+
     row('Calorias',s=>`<b>${f0(s.tt.kcal)}</b><div class="tiny faint">de ${f0(s.tg.kcal)}</div>`)+
-    row('Água',s=>`<b>${f1((s.dl.water||0)/1000,2)}</b> L`)+
+    row('Leitura',s=>s.rd.page==null?`<b>—</b><div class="tiny faint">hoje ${s.rd.today}</div>`:`pág. <b>${s.rd.page}</b><div class="tiny faint">hoje +${s.rd.today}${s.rd.gap>0?' · faltam '+s.rd.gap:''}</div>`)+
     row('Creatina',s=>s.doses.length?frac(s.creTaken,s.doses.length):'—')+
     row('Peso de hoje',s=>s.ent?f1(s.ent.weight)+' kg':'—'));
   const sem=table(
@@ -1439,10 +1433,12 @@ function vCompare(me,others,group){
     row('Givou treino',s=>`<b>${s.gvN}</b>`)+
     row('Dias de dieta ✔',s=>frac(s.dN,s.dD))+
     row('Trolou a dieta',s=>`<b>${s.trN}</b>`)+
+    row('Págs lidas (7 dias)',s=>`<b>${s.rd.week}</b>`)+
     row('Creatina ✔',s=>frac(s.cN,s.cD))+
     row('Pesagens',s=>`<b>${s.wN}</b>`)+
     row('Sequência treino',s=>`<b>${s.streak}</b>`));
   const tot=table(
+    row('Páginas lidas',s=>`<b>${s.rd.total}</b> / ${RD_TOTAL}`)+
     row('Treinos feitos',s=>`<b>${s.sessN}</b>`)+
     row('Volume total',s=>`<b>${f1(s.vol/1000)}</b> t`)+
     row('Peso perdido',s=>kg(s))+
@@ -1457,6 +1453,7 @@ function vCompare(me,others,group){
     if(s.w!=='R'&&!s.trained&&!s.gived)msgs.push(['Cobrar treino'+tag,`E aí, ${nm}! Hoje é treino ${s.w}${s.wk?' ('+s.wk.name+')':''}. Já foi?`]);
     if(!s.trolled&&s.tt.done<s.tt.total)msgs.push(['Cobrar dieta'+tag,`${nm}, como está a dieta hoje? Já registrou as refeições no app?`]);
     if(s.doses.length&&s.creTaken<s.doses.length)msgs.push(['Lembrar creatina'+tag,`${nm}, não esquece da creatina hoje! Já tomou?`]);
+    if(s.rd.gap>0)msgs.push(['Cobrar leitura'+tag,`${nm}, e a leitura? ${s.rd.page==null?'Ainda não vi nenhuma página registrada.':'Você está na pág. '+s.rd.page+'.'} Faltam ${s.rd.gap} pág${s.rd.gap>1?'s':''} para a meta de hoje.`]);
     if(s.trained)msgs.push(['Parabéns'+tag,`Boa, ${nm}! Vi que você treinou hoje. Segue assim!`]);
   });
   const pend=all.filter((x,i)=>ST[i].doses.length&&ST[i].creTaken<ST[i].doses.length).map(x=>x.p===me?firstName(me.name):x.nm);
@@ -1486,7 +1483,7 @@ function vPar(){
   const f=FR.map[key];
   if(!f.p)return chips+`<div class="stack"><div class="note">${f.err==='denied'?'O Firebase ainda não liberou a leitura dos dados dele. Publique o arquivo firestore.rules novo (veja Ajustes › Amigos).':f.err==='net'?'Sem conexão agora; tento de novo daqui a pouco.':f.err==='empty'?'Ele ainda não sincronizou nenhum dado.':'Buscando os dados dele…'}</div>${friendsCard()}</div>`;
   const p=f.p,cur=S.ui.psec||'resumo';
-  const secs=[['resumo','Resumo'],['hoje','Hoje'],['dieta','Dieta'],['treino','Treino'],['corpo','Corpo'],['cal','Calendário']];
+  const secs=[['resumo','Resumo'],['hoje','Hoje'],['dieta','Dieta'],['treino','Treino'],['corpo','Corpo'],['leitura','Leitura']];
   const bar=`<div class="pbar"><span class="av">${esc((p.name||'?').trim().charAt(0).toUpperCase())}</span><div class="sp" style="min-width:0"><b>${esc(p.name)}</b><div class="small muted">Somente leitura · última atividade ${relT(f.at)}${f.err==='net'?' · sem conexão, mostrando o último que recebi':f.err==='denied'?' · sem acesso agora, mostrando o último que recebi':''}</div></div></div>`;
   const tabs=`<div class="tabs" role="tablist" style="margin-top:12px">${secs.map(([k,l])=>`<button role="tab" aria-selected="${cur===k}" data-a="psec" data-s="${k}">${l}</button>`).join('')}</div>`;
   let inner='';RO=p;
@@ -1496,7 +1493,7 @@ function vPar(){
       case 'dieta':if(sub('dieta','dia')==='alimentos')S.ui.sub.dieta='dia';inner=vDieta();break;
       case 'treino':inner=vTreino();break;
       case 'corpo':inner=vMedidas();break;
-      case 'cal':inner=vCal();break;
+      case 'leitura':inner=vLeit();break;
       default:inner=vCompare(me,[f],false);
     }
   }catch(e){console.error(e);inner=`<div class="note warn">Não consegui montar esta tela com os dados dele.</div>`}
@@ -1790,35 +1787,169 @@ A.wzfinish=()=>{
   }
 };
 
-/* ========== CALENDÁRIO ========== */
-function vCal(){
-  const p=P(),n=planDays(p),today=todayStr(),sel=D();
-  const lead=dow(p.start);const cells=[];for(let i=0;i<lead;i++)cells.push(null);for(let i=0;i<n;i++)cells.push(addDays(p.start,i));
-  const dot=(v,past,cls='')=>`<span class="dot ${cls} ${v===true?'on':v===false&&past?'no':''}"></span>`;
-  let cntD=0,cntT=0,cntC=0,cntW=0,prevT=0,prevC=0,pastN=0,pastD=0,pastT=0,pastPrev=0,nTroll=0,nGiva=0;
-  for(let i=0;i<n;i++){const d=addDays(p.start,i);const past=d<=today;const w=schedOf(p,d)!=='R';const dok=dietOK(p,d),tok=trainOK(p,d),cok=creOK(p,d);
-    if(dok===true)cntD++;if(tok===true)cntT++;if(cok===true)cntC++;if(w)prevT++;if(creDoses(p,d).length)prevC++;if(p.body.some(b=>b.date===d&&b.weight!=null))cntW++;
-    if(trolled(p,d))nTroll++;if(gaved(p,d)&&tok!==true)nGiva++;
-    if(past){pastN++;if(dok===true)pastD++;if(w){pastPrev++;if(tok===true)pastT++}}}
-  let streak=0;for(let d=today<p.start?null:(today>p.end?p.end:today);d&&d>=p.start;d=addDays(d,-1)){const ok=dietOK(p,d);if(ok===true)streak++;else if(d===today&&ok==null)continue;else break}
-  const pct=(a,b)=>b?f0(a/b*100)+'%':'—';
-  const cell=d=>{if(!d)return '<div></div>';const hi=isHigh(p,d),w=schedOf(p,d),past=d<=today,ev=p.plan.events[d];const wb=p.body.some(b=>b.date===d&&b.weight!=null);
-    return `<button class="cd ${hi?'hi':'lo'} ${d===today?'today':''} ${d===sel?'sel':''}" data-a="goday" data-d="${d}" data-t="hoje" title="${esc(WDL[dow(d)]+' '+fmtD(d)+' · carbo '+(hi?'alto':'baixo')+(ev?' · '+ev:''))}" aria-label="${esc(WDL[dow(d)]+' '+fmtD(d))}">
-      ${ev?'<span class="ev"></span>':''}<span class="n num">${pdate(d).getDate()}</span><span class="t">${w==='R'?'Descanso':'Treino '+w}</span>
-      <span class="dots">${dot(dietOK(p,d),past)}${w!=='R'?dot(trainOK(p,d),past):''}${creDoses(p,d).length?dot(creOK(p,d),past,'c'):''}${wb?'<span class="dot w on"></span>':''}</span></button>`};
-  const events=Object.entries(p.plan.events).sort();
-  return `<div class="stack"><div class="card"><div class="ch"><h3>${fmtD(p.start)} a ${fmtD(p.end)} · ${n} dias</h3></div>
-   <div class="cal">${WD.map(w=>`<div class="h">${w}</div>`).join('')}${cells.map(cell).join('')}</div>
-   <div class="legend" style="margin-top:12px"><span><i class="sw" style="background:var(--hi)"></i>Carbo alto</span><span><i class="sw" style="background:var(--lo)"></i>Carbo baixo</span><span><span class="dot on"></span>Dieta/treino ✔</span><span><span class="dot no"></span>Trolou/faltou</span><span><span class="dot c on"></span>Creatina</span><span><span class="dot w on"></span>Pesagem</span><span><i class="sw" style="background:var(--brand);transform:rotate(45deg);width:8px;height:8px"></i>Marco</span></div></div>
-   <div class="tiles"><div class="tile"><span class="upper">Dieta ✔</span><span class="v">${cntD}<small> / ${n}</small></span><span class="small muted">${pct(pastD,pastN)} dos dias até hoje · trolou ${nTroll}</span></div>
-    <div class="tile"><span class="upper">Treinos ✔</span><span class="v">${cntT}<small> / ${prevT}</small></span><span class="small muted">${pct(pastT,pastPrev)} dos previstos até hoje · givou ${nGiva}</span></div>
-    <div class="tile"><span class="upper">Creatina ✔</span><span class="v">${cntC}<small> / ${prevC}</small></span><span class="small muted">dias com todas as doses</span></div>
-    <div class="tile"><span class="upper">Pesagens</span><span class="v">${cntW}<small> / ${Math.floor((n-1)/7)+1}</small></span><span class="small muted">sequência de dieta: ${streak} dia${streak===1?'':'s'}</span></div></div>
-   <div class="card"><div class="ch"><h3>Marcos do plano</h3></div><div class="stack" style="gap:6px">${events.map(([d,t])=>`<div class="row"><span class="pill ${d<=today?'':'brand'}">${fmtD(d)}</span><span class="sp small">${esc(t)}</span><button class="iconbtn del" data-a="evdel" data-d="${d}" aria-label="Remover marco">${ico('x')}</button></div>`).join('')}
-    <div class="row" style="margin-top:6px"><input type="date" id="ev_d" value="${sel}" style="max-width:160px"><input type="text" id="ev_t" placeholder="Novo marco (ex.: consulta, avaliação)" style="flex:1;min-width:160px"><button class="btn" data-a="evadd">${ico('plus')}Adicionar</button></div></div></div></div>`;
+/* ========== LEITURA: plano "Panorama Bíblico" (9/nov a 8/dez de 2026) ==========
+   Cada pessoa registra quantas páginas leu em cada dia (p.days[d].read). O total lido anda pela ordem do plano,
+   então "está na pág. X" sai sozinho; quem lê mais que a meta só soma, e quem atrasa só recupera depois.
+   Domingos de revisão não entram na contagem de páginas: são só um ✓ ("revisão feita"). */
+const RD_ROWS=(()=>{
+  const R=[
+   ['2026-11-09','3-25','Introdução, estrutura da Bíblia (66 livros) e versões · Panorama geral dos 66 livros e Panorama do Antigo Testamento · Gênesis'],
+   ['2026-11-12','26-34','Êxodo'],
+   ['2026-11-13','35-44','Levítico e Números'],
+   ['2026-11-14','45-50','Deuteronômio e Josué'],
+   ['2026-11-15','12','Revisão: resumo de Gênesis a Rute no Panorama geral',1],
+   ['2026-11-16','51-60','Juízes, Rute, 1 e 2 Samuel'],
+   ['2026-11-17','71-72,61-67','1 Crônicas e, depois, 1 Reis'],
+   ['2026-11-18','85-94','Jó, Salmos, Provérbios, Eclesiastes e Cantares'],
+   ['2026-11-19','68-70,73-74,95-100','2 Reis, 2 Crônicas, introdução aos profetas e Isaías'],
+   ['2026-11-20','110-113,116-117','Introdução aos profetas menores, Oséias e Amós'],
+   ['2026-11-21','120-126','Jonas, Miquéias e Naum'],
+   ['2026-11-22','13-15','Revisão: resumos de Samuel a Naum no Panorama geral',1],
+   ['2026-11-23','129-130,101-102,127-128','Sofonias, Jeremias e Habacuque'],
+   ['2026-11-24','103-104,118-119,114-115','Lamentações, Obadias e Joel'],
+   ['2026-11-25','105-109,75-77','Ezequiel, Daniel e, depois, Esdras'],
+   ['2026-11-26','131-134,81-84','Ageu, Zacarias e Ester'],
+   ['2026-11-27','78-80,135-140','Neemias, Malaquias e período interbíblico'],
+   ['2026-11-28','141-153','Introdução ao Novo Testamento e aos Evangelhos; Mateus, Marcos e Lucas'],
+   ['2026-11-29','13-15','Revisão: resumos de Esdras a Ester e de Jeremias a Malaquias',1],
+   ['2026-11-30','154-163','João'],
+   ['2026-12-01','164-166,174-175,182-185','Atos, Gálatas e 1 e 2 Tessalonicenses'],
+   ['2026-12-02','170-173,167-169','1 e 2 Coríntios e, depois, Romanos'],
+   ['2026-12-03','176-181,192-193','Efésios, Filipenses, Colossenses e Filemom'],
+   ['2026-12-04','186-191','1 e 2 Timóteo e Tito'],
+   ['2026-12-05','194-202','Hebreus, Tiago, 1 e 2 Pedro'],
+   ['2026-12-06','15-16','Revisão: resumos de Mateus a Judas no Panorama geral',1],
+   ['2026-12-07','203-210','1, 2 e 3 João e Judas'],
+   ['2026-12-08','211-216','Apocalipse (opcional: reler o Panorama geral, p. 12–16)']];
+  let cum=0;
+  return R.map(([d,pg,t,rev])=>{
+    const rg=pg.split(',').map(x=>x.split('-').map(Number)).map(([a,b])=>[a,b==null||isNaN(b)?a:b]);
+    const n=rev?0:rg.reduce((s,[a,b])=>s+b-a+1,0),a=cum;cum+=n;
+    return {d,pg,t,rev:!!rev,n,a,b:cum,rg}
+  });
+})();
+const RD_SEQ=RD_ROWS.filter(r=>!r.rev).flatMap(r=>r.rg.flatMap(([a,b])=>Array.from({length:b-a+1},(_,i)=>a+i)));
+const RD_TOTAL=RD_SEQ.length, RD_START=RD_ROWS[0].d, RD_END=RD_ROWS[RD_ROWS.length-1].d;
+const rdRow=d=>RD_ROWS.find(r=>r.d===d);
+const rdCumAt=d=>RD_ROWS.reduce((s,r)=>r.d<=d?r.b:s,0);               /* páginas previstas até o fim do dia d */
+const rdTotal=p=>{let n=0;for(const k in p.days)n+=Math.max(0,+p.days[k].read||0);return Math.min(n,RD_TOTAL)};
+const rdPage=p=>{const n=rdTotal(p);return n>0?RD_SEQ[n-1]:null};
+const rdReadOn=(p,d)=>Math.max(0,+(p.days[d]&&p.days[d].read)||0);
+const rdRevOn=(p,d)=>!!(p.days[d]&&p.days[d].rev);
+const rdGap=(p,d=todayStr())=>rdCumAt(d)-rdTotal(p);                    /* >0 atrasado, <0 adiantado */
+const rdFmt=s=>{const a=String(s).split(',').map(x=>x.replace('-','–'));return a.length>1?a.slice(0,-1).join(', ')+' e '+a[a.length-1]:a[0]};
+const rdPg=s=>(/[–,-]/.test(s)?'págs. ':'pág. ')+rdFmt(s);
+const rdN=n=>`${n} pág${n===1?'':'s'}`;
+function rdWeek(p){let n=0;for(let i=0;i<7;i++)n+=rdReadOn(p,addDays(todayStr(),-i));return n}
+/* soma n páginas no dia d; n negativo tira primeiro do próprio dia e depois dos dias anteriores */
+function rdAdjust(p,d,n){
+  if(n>0){const add=Math.min(n,RD_TOTAL-rdTotal(p));if(add>0){const dl=ensureDay(p,d);dl.read=rdReadOn(p,d)+add}return add}
+  let rem=-n,took=0;
+  for(const k of Object.keys(p.days).filter(k=>k<=d&&rdReadOn(p,k)>0).sort().reverse()){
+    const t=Math.min(rem,rdReadOn(p,k));p.days[k].read=rdReadOn(p,k)-t;rem-=t;took+=t;if(!rem)break}
+  return -took;
 }
-A.evadd=()=>{const d=$('#ev_d').value,t=$('#ev_t').value.trim();if(!d||!t){toast('Informe a data e o texto do marco');return}const ev=P().plan.events;ev[d]=ev[d]?ev[d]+' · '+t:t;save();render()};
-A.evdel=el=>{delete P().plan.events[el.dataset.d];save();render()};
+function rdBadge(p){
+  const t=todayStr(),tot=rdTotal(p);
+  if(tot>=RD_TOTAL)return ['ok','Plano concluído'];
+  if(t<RD_START)return tot>0?['ok',`Adiantado: ${rdN(tot)}`]:['',`Começa ${fmtD(RD_START)}`];
+  const gap=rdGap(p,t);
+  if(gap>0)return ['warn',t>RD_END?`Faltam ${rdN(gap)}`:`Faltam ${rdN(gap)} p/ a meta`];
+  return gap<0?['ok',`${rdN(-gap)} à frente`]:['ok','Em dia'];
+}
+function rdWhere(p){const pg=rdPage(p);return pg==null?'ainda não começou':'está na pág. <b>'+pg+'</b>'}
+
+/* ----- quem está onde (primeira coisa da aba) ----- */
+function readWho(){
+  const me=S.profiles[S.active];
+  const L=[{nm:me.name||'Você',p:me,me:true}];
+  if(typeof friendList==='function')friendList().forEach(f=>L.push({nm:f.name||'Amigo',p:f.p,f}));
+  const row=x=>{
+    const av=`<span class="av-s">${esc((x.nm||'?').trim().charAt(0).toUpperCase())}</span>`;
+    if(!x.p)return `<div class="row" style="align-items:flex-start">${av}<div class="sp" style="min-width:0"><div style="font-size:18px;line-height:1.25"><b>${esc(x.nm)}</b> <span class="muted">· aguardando os dados</span></div></div></div>`;
+    const tot=rdTotal(x.p),pc=tot/RD_TOTAL*100,b=rdBadge(x.p),td=rdReadOn(x.p,todayStr());
+    return `<div class="row" style="align-items:flex-start">${av}<div class="sp" style="min-width:0">
+      <div style="font-size:18px;line-height:1.25"><b>${esc(x.nm)}</b>${x.me?' <span class="tiny faint">(você)</span>':''} ${rdWhere(x.p)}</div>
+      <div class="bar" style="margin:7px 0 5px"><i style="width:${clamp(pc,0,100)}%"></i></div>
+      <div class="small muted">${tot} de ${RD_TOTAL} págs (${f0(pc)}%) · hoje ${td>0?'+'+td:'0'} · <span class="pill ${b[0]}" style="padding:1px 8px;font-size:11px">${esc(b[1])}</span></div></div></div>`;
+  };
+  return `<div class="card"><div class="ch"><h3>Quem está onde</h3><span class="small muted">Panorama Bíblico</span></div><div class="stack" style="gap:14px">${L.map(row).join('')}</div></div>`;
+}
+
+/* ----- cartão do dia (aba Leitura e tela Hoje) ----- */
+function readCard(p,d,full){
+  const row=rdRow(d),tot=rdTotal(p),pg=rdPage(p),isT=d===todayStr(),td=rdReadOn(p,d);
+  const head=(pill)=>`<div class="ch"><h3>Leitura</h3>${pill}</div>`;
+  const btns=(a)=>`<div class="seg" style="margin-top:10px">${[[-5,'−5'],[-1,'−1'],[1,'+1'],[5,'+5'],[10,'+10']].map(([n,l])=>`<button data-a="rdadd" data-n="${n}" data-d="${d}" aria-label="${n>0?'Somar':'Tirar'} ${Math.abs(n)} página${Math.abs(n)>1?'s':''}">${l}</button>`).join('')}</div>`;
+  const b=isT?rdBadge(p):null,pill=b?`<span class="pill ${b[0]}">${esc(b[1])}</span>`:'';
+  const ro=typeof RO!=='undefined'&&!!RO,you=ro?esc(firstName(p.name)):'Você',inside=d>=RD_START&&d<=RD_END;
+  let h;
+  if(!row&&inside){
+    h=`${head(pill)}<p><b>Sem leitura nova neste dia.</b></p><p class="small muted">A leitura de ${fmtD(RD_START)} reuniu as páginas de 9, 10 e 11/nov. ${tot<rdCumAt(d)?'Quem ainda não terminou aproveita para recuperar; ':''}se leu mais, é só registrar.</p>
+      <div class="big" style="margin:8px 0 0">${td}<small> ${td===1?'pág. lida':'págs lidas'} ${isT?'hoje':'neste dia'}</small></div>${btns()}${isT&&rdCumAt(d)-tot>0?`<div class="row" style="margin-top:10px"><button class="btn pri" data-a="rdall" data-d="${d}">${ico('check')}Li tudo até a meta (${rdN(rdCumAt(d)-tot)})</button></div>`:''}`;
+  }else if(!row){
+    const before=d<RD_START;
+    h=`${head(pill)}<p class="muted">${before?`O plano de leitura começa na ${WDL[dow(RD_START)].toLowerCase()}, ${fmtD(RD_START)}.`:`O plano terminou em ${fmtD(RD_END)}.`} Se leu algo hoje, pode registrar mesmo assim:</p><div class="big">${td}<small> págs hoje</small></div>${btns()}`;
+  }else if(row.rev){
+    const ok=rdRevOn(p,d);
+    h=`${head(pill)}<p><b>Revisão de domingo</b> · ${rdPg(row.pg)}</p><p class="small muted">${esc(row.t)}</p>
+      <div class="row" style="margin-top:10px"><button class="btn ${ok?'':'pri'}" data-a="rdrev" data-d="${d}" aria-pressed="${ok}">${ico('check')}${ok?'Revisão feita (desfazer)':'Marcar revisão feita'}</button></div>
+      <hr class="sep"><div class="small muted">Leitura pendente? Some as páginas lidas hoje:</div><div class="row" style="margin-top:6px"><div class="big" style="margin:0">${td}<small> págs hoje</small></div></div>${btns()}${isT&&rdCumAt(d)-tot>0?`<div class="row" style="margin-top:10px"><button class="btn pri" data-a="rdall" data-d="${d}">${ico('check')}Li tudo até a meta (${rdN(rdCumAt(d)-tot)})</button></div>`:''}`;
+  }else{
+    const need=isT?Math.max(0,rdCumAt(d)-tot):0;
+    const pc=row.n?clamp((tot-row.a)/row.n*100,0,100):100;
+    h=`${head(pill)}<p><b>${rdPg(row.pg)}</b> <span class="muted">· meta do dia: ${rdN(row.n)}</span></p><p class="small muted">${esc(row.t)}</p>
+      <div class="row" style="margin-top:8px;align-items:flex-end"><div class="big" style="margin:0">${td}<small> ${td===1?'pág. lida':'págs lidas'} ${isT?'hoje':'neste dia'}</small></div>${td>row.n?`<span class="pill ok">+${td-row.n} além da meta</span>`:''}</div>
+      <div class="bar" style="margin:10px 0 0"><i style="width:${pc}%"></i></div>
+      ${btns()}
+      ${isT&&need>0?`<div class="row" style="margin-top:10px"><button class="btn pri" data-a="rdall" data-d="${d}">${ico('check')}Li tudo até a meta (${rdN(need)})</button></div>`:''}`;
+  }
+  h+=`<p class="small muted" style="margin-top:10px">${pg==null?`Total: nenhuma página lida ainda. O plano começa na pág. ${RD_SEQ[0]}.`:`${you} está na pág. <b>${pg}</b> · ${tot} de ${RD_TOTAL} págs${tot<RD_TOTAL?` · próxima: pág. ${RD_SEQ[tot]}`:''}.`}</p>`;
+  if(full&&!ro){
+    h+=`<hr class="sep"><div class="row"><label class="f" style="flex-direction:row;align-items:center;gap:8px"><span class="small">Estou na pág.</span><input type="number" inputmode="numeric" id="rdp" min="1" max="${RD_SEQ[RD_TOTAL-1]}" style="width:96px" placeholder="${pg||RD_SEQ[0]}"></label><button class="btn" data-a="rdgo">Ir para essa página</button></div>
+      <p class="tiny faint" style="margin-top:6px">Atalho: em vez de somar, diga em que página você parou. O app ajusta o total de hoje.</p>`;
+  }
+  return `<div class="card" id="rdcard_${full?'t':'h'}">${h}</div>`;
+}
+
+/* ----- aba Leitura ----- */
+function vLeit(){
+  const p=P(),today=todayStr(),tot=rdTotal(p),gap=rdGap(p,today);
+  const days=Math.max(1,Math.min(diffDays(today,RD_START),diffDays(RD_END,RD_START))+1);
+  const avg=today<RD_START?0:tot/days;
+  const nxt=RD_ROWS.filter(r=>r.d>today).slice(0,3);
+  const status=r=>{
+    if(r.rev)return rdRevOn(p,r.d)?'<span class="pill ok">✔</span>':r.d<today?'<span class="pill">—</span>':'';
+    if(tot>=r.b)return '<span class="pill ok">✔</span>';
+    if(tot>r.a)return `<span class="pill warn">${tot-r.a}/${r.n}</span>`;
+    return r.d<today?'<span class="pill bad">pendente</span>':'';
+  };
+  const trow=r=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-top:1px solid var(--line);${r.d===today?'background:var(--brand-soft);':r.rev?'background:var(--lo-soft);':''}"><div style="flex:none;width:66px;font-size:13px"><b>${WD[dow(r.d)]}</b><div class="muted">${fmtD(r.d)}</div></div><div class="sp small" style="min-width:0"><b>${rdPg(r.pg)}</b>${r.rev?'':` <span class="muted">(${rdN(r.n)})</span>`}<div class="muted">${r.rev?'<i>':''}${esc(r.t)}${r.rev?'</i>':''}</div></div><div style="flex:none;min-width:34px;text-align:right">${status(r)}</div></div>`;
+  return `<div class="stack">${readWho()}${readCard(p,today,true)}
+   <div class="tiles"><div class="tile"><span class="upper">Páginas lidas</span><span class="v">${tot}<small> / ${RD_TOTAL}</small></span><span class="small muted">${f0(tot/RD_TOTAL*100)}% do plano</span></div>
+    <div class="tile"><span class="upper">Meta até hoje</span><span class="v">${rdCumAt(today)}<small> págs</small></span><span class="small muted">${gap>0?`faltam ${rdN(gap)}`:gap<0?`${rdN(-gap)} à frente`:'em dia'}</span></div>
+    <div class="tile"><span class="upper">Média por dia</span><span class="v">${f1(avg)}<small> págs</small></span><span class="small muted">últimos 7 dias: ${rdWeek(p)}</span></div></div>
+   ${nxt.length?`<div class="card"><div class="ch"><h3>Próximos dias</h3></div><div class="stack" style="gap:8px">${nxt.map(r=>`<div class="row" style="align-items:flex-start"><span class="pill ${r.rev?'brand':''}" style="flex:none">${WD[dow(r.d)]} ${fmtD(r.d)}</span><div class="sp small" style="min-width:0"><b>${rdPg(r.pg)}</b>${r.rev?'':` <span class="muted">(${rdN(r.n)})</span>`}<div class="muted">${esc(r.t)}</div></div></div>`).join('')}</div></div>`:''}
+   <details class="acc"><summary style="font-size:17px;padding:10px 14px">Plano completo · ${RD_ROWS.length} dias <span class="small muted">(revisões feitas: ${RD_ROWS.filter(r=>r.rev&&rdRevOn(p,r.d)).length}/${RD_ROWS.filter(r=>r.rev).length})</span></summary><div class="accb"><div>${RD_ROWS.map(trow).join('')}</div>
+    <p class="tiny faint" style="margin-top:8px">Linhas azuis são revisões de domingo (não contam páginas). Se atrasar, é só recuperar depois: o total anda pela ordem do plano e a meta de hoje mostra quanto falta. Segunda, 9/nov, reúne as páginas de 9, 10 e 11/nov.</p></div></details></div>`;
+}
+function rdDone(msg){render();if(msg)toast(msg)}
+A.rdadd=el=>{const p=P(),d=el.dataset.d||todayStr(),n=+el.dataset.n;
+  if(d>todayStr()){toast('Só dá para registrar hoje ou dias que já passaram');return}
+  const r=rdAdjust(p,d,n);if(!r){toast(n>0?'Você já chegou ao fim do plano':'Não há páginas registradas para tirar');return}
+  save();rdDone()};
+A.rdall=el=>{const p=P(),d=el.dataset.d||todayStr(),need=rdCumAt(d)-rdTotal(p);
+  if(need<=0){toast('Você já está em dia');return}rdAdjust(p,d,need);save();rdDone('Meta de hoje cumprida')};
+A.rdrev=el=>{const p=P(),d=el.dataset.d||todayStr();if(d>todayStr()){toast('Só dá para marcar hoje ou dias que já passaram');return}
+  const dl=ensureDay(p,d);dl.rev=!dl.rev;save();rdDone(dl.rev?'Revisão registrada':'Registro desfeito')};
+A.rdgo=()=>{const p=P(),v=Math.round(num($('#rdp').value)),cur=rdTotal(p),d=todayStr();
+  if(!v||v<1){toast('Informe a página em que você está');return}
+  let target;const at=[];RD_SEQ.forEach((x,i)=>{if(x===v)at.push(i+1)});
+  if(at.length)target=at.reduce((a,b)=>Math.abs(b-cur)<Math.abs(a-cur)||(Math.abs(b-cur)===Math.abs(a-cur)&&b>a)?b:a);
+  else if(v<RD_SEQ[0])target=0;else if(v>RD_SEQ[RD_TOTAL-1])target=RD_TOTAL;
+  else{toast(`A pág. ${v} não faz parte do plano`);return}
+  const delta=target-cur;if(!delta){toast('Você já estava nessa página');return}
+  rdAdjust(p,d,delta);save();rdDone(target?`Agora você está na pág. ${RD_SEQ[target-1]}`:'Leitura zerada')};
 
 /* ========== MAIS ========== */
 function vMais(){
@@ -1846,19 +1977,21 @@ function vHist(){
   const p=P(),f=sub('hist','tudo');const L=[];
   p.sessions.filter(sessDone).forEach(s=>L.push({d:s.date,k:'treino',h:`<b>Treino ${s.wid} — ${esc((p.plan.workouts[s.wid]||{}).name||'')}</b><div class="small muted">${setsDone(s)} séries · ${f0(setsVol(s))} kg de volume${s.dur?' · '+s.dur+' min':''}${s.notes?'<br>“'+esc(s.notes)+'”':''}</div>`,go:'treino',del:'sess:'+s.id}));
   p.body.forEach(b=>L.push({d:b.date,k:'medida',h:`<b>Medidas</b><div class="small muted">${[b.weight!=null?f1(b.weight)+' kg':'',...MEAS.filter(m=>b[m[0]]!=null).map(m=>m[1]+' '+f1(b[m[0]])+' '+m[2])].filter(Boolean).join(' · ')}${b.note?'<br>“'+esc(b.note)+'”':''}</div>`,go:'corpo',del:'body:'+b.id}));
-  Object.entries(p.days).forEach(([d,dl])=>{const t=dayTotals(p,d);if(t.logged||t.extraKcal||dl.water||dl.troll)L.push({d,k:'dieta',h:`<b>Dieta e hábitos</b>${dl.troll?' <span class="pill bad" style="padding:1px 7px;font-size:10px">trolou</span>':''}<div class="small muted">${f0(t.kcal)} kcal de ${f0(dayTarget(p,d).kcal)} · P ${f0(t.p)} g · ${t.done}/${t.total} refeições${dl.water?' · '+f1(dl.water/1000,1)+' L de água':''}</div>`,go:'dieta',del:'day:'+d});
+  Object.entries(p.days).forEach(([d,dl])=>{const t=dayTotals(p,d);if(t.logged||t.extraKcal||dl.troll)L.push({d,k:'dieta',h:`<b>Dieta e hábitos</b>${dl.troll?' <span class="pill bad" style="padding:1px 7px;font-size:10px">trolou</span>':''}<div class="small muted">${f0(t.kcal)} kcal de ${f0(dayTarget(p,d).kcal)} · P ${f0(t.p)} g · ${t.done}/${t.total} refeições</div>`,go:'dieta',del:'day:'+d});
     if(dl.giva&&!sessDone(sessionOf(p,d)))L.push({d,k:'treino',h:`<b>Givou o treino</b> <span class="pill bad" style="padding:1px 7px;font-size:10px">givei</span>`,go:'treino'});
+    if(rdReadOn(p,d)>0||dl.rev)L.push({d,k:'leitura',h:`<b>Leitura</b><div class="small muted">${rdReadOn(p,d)>0?rdN(rdReadOn(p,d))+' lidas':''}${dl.rev?(rdReadOn(p,d)>0?' · ':'')+'revisão feita':''}</div>`,go:'leitura',del:'read:'+d});
     if(dl.note)L.push({d,k:'nota',h:`<b>Anotação</b><div class="small muted">${esc(dl.note)}</div>`,go:'hoje'})});
   const temNota=L.some(x=>x.k==='nota');
   const F=L.filter(x=>f==='tudo'||x.k===f).sort((a,b)=>b.d.localeCompare(a.d)||a.k.localeCompare(b.k));const lim=S.ui.histN||60;
-  return `<div class="stack"><div class="seg">${[['tudo','Tudo'],['treino','Treinos'],['medida','Medidas'],['dieta','Dieta'],...(temNota?[['nota','Anotações']]:[])].map(([k,l])=>`<button aria-pressed="${f===k}" data-a="histf" data-f="${k}">${l}</button>`).join('')}</div>
-   ${F.length?F.slice(0,lim).map(x=>`<div class="card" style="padding:12px 14px"><div class="row" style="align-items:flex-start"><div style="min-width:74px"><div class="big" style="font-size:26px">${fmtD(x.d)}</div><div class="small faint">${WD[dow(x.d)]} · <span class="pill ${x.k==='treino'?'brand':x.k==='medida'?'lo':x.k==='dieta'?'hi':''}" style="padding:1px 7px;font-size:10px">${x.k}</span></div></div><div class="sp" style="min-width:0">${x.h}</div>
+  return `<div class="stack"><div class="seg">${[['tudo','Tudo'],['treino','Treinos'],['medida','Medidas'],['dieta','Dieta'],['leitura','Leitura'],...(temNota?[['nota','Anotações']]:[])].map(([k,l])=>`<button aria-pressed="${f===k}" data-a="histf" data-f="${k}">${l}</button>`).join('')}</div>
+   ${F.length?F.slice(0,lim).map(x=>`<div class="card" style="padding:12px 14px"><div class="row" style="align-items:flex-start"><div style="min-width:74px"><div class="big" style="font-size:26px">${fmtD(x.d)}</div><div class="small faint">${WD[dow(x.d)]} · <span class="pill ${x.k==='treino'?'brand':x.k==='medida'?'lo':x.k==='dieta'?'hi':x.k==='leitura'?'ok':''}" style="padding:1px 7px;font-size:10px">${x.k}</span></div></div><div class="sp" style="min-width:0">${x.h}</div>
     <div class="row" style="gap:0;flex-wrap:nowrap"><button class="iconbtn" data-a="goday" data-d="${x.d}" data-t="${x.go}" aria-label="Abrir">${ico('right')}</button>${x.del?`<button class="iconbtn del" data-a="histdel" data-x="${x.del}" aria-label="Excluir">${ico('trash')}</button>`:''}</div></div></div>`).join(''):'<div class="empty">Nada registrado ainda. Seus treinos, medidas, refeições e anotações aparecem aqui.</div>'}
    ${F.length>lim?`<button class="btn" data-a="histmore">Mostrar mais</button>`:''}</div>`;
 }
 A.histf=el=>{S.ui.sub.hist=el.dataset.f;S.ui.histN=60;save();render()};A.histmore=()=>{S.ui.histN=(S.ui.histN||60)+60;render()};
 A.histdel=el=>{const [k,id]=el.dataset.x.split(':');ask('Excluir este registro? Isso não pode ser desfeito.',()=>{const p=P();
   if(k==='sess')p.sessions=p.sessions.filter(s=>s.id!==id);else if(k==='body')p.body=p.body.filter(b=>b.id!==id);else if(k==='day'&&p.days[id]){const dl=p.days[id];dl.meals={};dl.extras=[];dl.water=0;dl.wlog=[];dl.troll=false;dl.giva=false}
+  else if(k==='read'&&p.days[id]){p.days[id].read=0;p.days[id].rev=false}
   save();render()},'Excluir')};
 
 /* calculadoras */
@@ -1893,8 +2026,7 @@ function vAjustes(){
    <label class="f">Sexo<select data-c="pf" data-k="sex"><option value="M" ${p.sex!=='F'?'selected':''}>Masculino</option><option value="F" ${p.sex==='F'?'selected':''}>Feminino</option></select></label>
    <label class="f">Altura (m)<input type="number" step="0.01" value="${p.height}" data-c="pf" data-k="height"></label><label class="f">Peso inicial (kg)<input type="number" step="0.1" value="${p.startWeight==null?'':p.startWeight}" data-c="pf" data-k="startWeight"></label>
    <label class="f">Meta mínima de perda (kg)<input type="number" step="0.5" value="${p.goalMin}" data-c="pf" data-k="goalMin"></label><label class="f">Meta máxima (kg)<input type="number" step="0.5" value="${p.goalMax}" data-c="pf" data-k="goalMax"></label>
-   <label class="f">Início do plano<input type="date" value="${p.start}" data-c="pf" data-k="start"></label><label class="f">Fim do plano<input type="date" value="${p.end}" data-c="pf" data-k="end"></label>
-   <label class="f">Água mínima (ml)<input type="number" step="100" value="${p.plan.water.min}" data-c="pfw" data-k="min"></label><label class="f">Água máxima (ml)<input type="number" step="100" value="${p.plan.water.max}" data-c="pfw" data-k="max"></label></div>
+   <label class="f">Início do plano<input type="date" value="${p.start}" data-c="pf" data-k="start"></label><label class="f">Fim do plano<input type="date" value="${p.end}" data-c="pf" data-k="end"></label></div>
    ${np>1?`<div class="row" style="margin-top:12px"><button class="btn danger sm" data-a="delprof">Excluir ${esc(p.name)}</button></div>`:''}</div>
   <div class="card"><div class="ch"><h3>Rotina da semana</h3></div><p class="small muted" style="margin-bottom:10px">Dias de carbo alto (laranja) e treino de cada dia.</p>
    <div class="stack" style="gap:8px">${[1,2,3,4,5,6,0].map(i=>`<div class="row"><span style="width:44px;font-weight:700">${WD[i]}</span><button class="chip" aria-pressed="${p.plan.carbHigh.includes(i)}" data-a="hitoggle" data-i="${i}">Carbo ${p.plan.carbHigh.includes(i)?'alto':'baixo'}</button><select data-c="sched" data-i="${i}" style="flex:1;min-width:150px">${wopt(p.plan.sched[i]||'R')}</select></div>`).join('')}</div></div>
@@ -1908,7 +2040,6 @@ function vAjustes(){
 I.pf=el=>{const p=P(),k=el.dataset.k;if(['age','height','startWeight','goalMin','goalMax'].includes(k)){const v=num(el.value);if(v==null||v<=0){toast('Valor inválido');render();return}p[k]=k==='age'?Math.round(v):v}
   else if(k==='start'||k==='end'){if(!el.value)return;p[k]=el.value;if(p.end<p.start){toast('O fim deve ser depois do início');p[k]=k==='start'?p.end:p.start}}
   else p[k]=el.value.trim()||p[k];save();render();if(k==='name'&&typeof publishMe==='function')publishMe()};
-I.pfw=el=>{const v=num(el.value);if(v&&v>0)P().plan.water[el.dataset.k]=v;save()};
 A.hitoggle=el=>{const p=P(),i=+el.dataset.i,L=p.plan.carbHigh;p.plan.carbHigh=L.includes(i)?L.filter(x=>x!==i):L.concat(i).sort();save();render()};
 I.sched=el=>{P().plan.sched[+el.dataset.i]=el.value;save()};
 A.delprof=()=>ask(`Excluir ${P().name} e todos os registros? Isso não pode ser desfeito.`,()=>{delete photos[P().id];savePhotos();delete S.profiles[S.active];S.active=Object.keys(S.profiles)[0];save();render()},'Excluir');
@@ -1929,7 +2060,7 @@ A.impok=()=>{try{const o=JSON.parse($('#imp_t').value);const st=o.state||o;if(!s
   const ui=S.ui;S=st;S.ui=S.ui||ui;S.foods=S.foods||[];if(!S.profiles[S.active])S.active=Object.keys(S.profiles)[0];S.onboarded=true;save();SYNC.last={};closeModal();render();toast('Backup importado')}catch(e){toast('Arquivo inválido: não parece um backup do TRINCADA')}};
 A.csv=el=>{const p=P(),k=el.dataset.k,q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';let rows=[];
   if(k==='body'){rows.push(['data','peso_kg',...MEAS.map(m=>m[1]),'obs']);bodySorted(p).forEach(b=>rows.push([b.date,b.weight,...MEAS.map(m=>b[m[0]]),b.note]))}
-  else if(k==='diet'){rows.push(['data','tipo','kcal','meta_kcal','proteina_g','carbo_g','gordura_g','refeicoes','agua_ml','trolou']);Object.keys(p.days).sort().forEach(d=>{const t=dayTotals(p,d);if(!t.logged&&!t.water&&!t.extraKcal&&!trolled(p,d))return;rows.push([d,isHigh(p,d)?'alto':'baixo',Math.round(t.kcal),dayTarget(p,d).kcal,Math.round(t.p),Math.round(t.c),Math.round(t.f),t.done,t.water,trolled(p,d)?'sim':''])})}
+  else if(k==='diet'){rows.push(['data','tipo','kcal','meta_kcal','proteina_g','carbo_g','gordura_g','refeicoes','trolou']);Object.keys(p.days).sort().forEach(d=>{const t=dayTotals(p,d);if(!t.logged&&!t.extraKcal&&!trolled(p,d))return;rows.push([d,isHigh(p,d)?'alto':'baixo',Math.round(t.kcal),dayTarget(p,d).kcal,Math.round(t.p),Math.round(t.c),Math.round(t.f),t.done,trolled(p,d)?'sim':''])})}
   else{rows.push(['data','treino','exercicio','serie','kg','reps_ou_s','feita']);p.sessions.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>s.exercises.forEach(e=>e.sets.forEach((x,i)=>rows.push([s.date,s.wid,e.name,i+1,x.kg,x.reps,x.done?'sim':'não']))))}
   if(rows.length<2){toast('Ainda não há dados para exportar');return}
   exportFile(`diario-fit-${k}-${todayStr()}.csv`,'﻿'+rows.map(r=>r.map(q).join(';')).join('\n'))};
@@ -1937,8 +2068,9 @@ A.csv=el=>{const p=P(),k=el.dataset.k,q=v=>'"'+String(v==null?'':v).replace(/"/g
 /* ========== inicialização ========== */
 let rzT=null;addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(drawCharts,150)});
 loadState();if(typeof friendsLoadCache==='function')friendsLoadCache();
+if(S.ui.tab==='cal')S.ui.tab='leitura';if(S.ui.psec==='cal')S.ui.psec='leitura';
 {const h=(location.hash||'').slice(1);if(TABKEYS.includes(h))S.ui.tab=h;try{history.replaceState({t:S.ui.tab},'','#'+S.ui.tab)}catch(e){}}
-document.body.insertAdjacentHTML('beforeend','<div id="toast" aria-live="polite"></div><div id="rest" hidden></div>');
+document.body.insertAdjacentHTML('beforeend','<div id="toast" aria-live="polite"></div>');
 render();
 if(!S.onboarded)onboarding();
 initSync();
